@@ -1,0 +1,1 @@
+Hi, my name is Ria Sinha, and I am a third year Computer Science major. For this app, I hope we can implement functionality that allows us to find similar songs and curate it into a playlist that users can easily stream while running.

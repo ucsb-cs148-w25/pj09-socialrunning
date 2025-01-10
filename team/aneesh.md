@@ -1,0 +1,3 @@
+# Introduction
+
+Hi, my name is **Aneesh Agarwal**, and I am a fourth year **Computer Science major**. For this app, I hope we can implement functionality that allows us to reccomend songs to people based on their heart rate throughout their run as it changes. To do this, I beleive we will need to have a database of songs that correspond to different BPM's that way we can facilitate acucrate reccomendations for them while they are on their run. While calculating the BPM on the go may be tough, we can perhaps craft playlists ahead of time for different BPM's using an API.

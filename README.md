@@ -11,5 +11,5 @@
 | Adil Ahmed | adilahmed2 |
 | Nilay Kundu | nilay-kundu |
 | Ria Sinha | riasinha |
-| Piyush Jadhav | |
+| Piyush Jadhav | PiyushJadhav |
 | Aneesh Agarwal | |

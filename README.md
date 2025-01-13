@@ -10,6 +10,6 @@
 | Olivia Jonokuchi | |
 | Adil Ahmed | |
 | Nilay Kundu | |
-| Ria Sinha | |
+| Ria Sinha | riasinha |
 | Piyush Jadhav | |
 | Aneesh Agarwal | |

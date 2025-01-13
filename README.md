@@ -8,7 +8,7 @@
 | :-----------: | :----------: |
 | Ron Kibel | rkibel |
 | Olivia Jonokuchi | |
-| Adil Ahmed | |
+| Adil Ahmed | adilahmed2 |
 | Nilay Kundu | |
 | Ria Sinha | riasinha |
 | Piyush Jadhav | |

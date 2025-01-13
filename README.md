@@ -9,7 +9,7 @@
 | Ron Kibel | rkibel |
 | Olivia Jonokuchi | |
 | Adil Ahmed | adilahmed2 |
-| Nilay Kundu | |
+| Nilay Kundu | nilay-kundu |
 | Ria Sinha | riasinha |
 | Piyush Jadhav | |
 | Aneesh Agarwal | |

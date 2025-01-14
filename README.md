@@ -7,7 +7,7 @@
 | Member        | GitHub id    |
 | :-----------: | :----------: |
 | Ron Kibel | rkibel |
-| Olivia Jonokuchi | |
+| Olivia Jonokuchi | livjono |
 | Adil Ahmed | adilahmed2 |
 | Nilay Kundu | nilay-kundu |
 | Ria Sinha | riasinha |

@@ -18,7 +18,7 @@ Aneesh:
 
 Ron:
 
-Olivia:
+Olivia: Communicated absence ahead of time (sick)
 
 Nilay:
 

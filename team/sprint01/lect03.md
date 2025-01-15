@@ -10,6 +10,8 @@ Team: Adil Ahmed [x], Aneesh Agarwal [x], Ron Kibel [x], Olivia Jonokuchi [], Ni
 
 Scribed Discussion:
 
+The team has reached milestone 1, but everyone needs to work on their HelloWorld app for lab01. We have reached a consensus that this will be a react-native app. Additionally, we need to discuss tech stack and APIs for the app.
+
 Adil:
 
 Aneesh:

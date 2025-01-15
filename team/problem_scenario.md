@@ -1,1 +1,1 @@
-This is the problem statement.
+Sarah is a passionate runner who enjoys listening to music during her workouts. She has a carefully curated playlist, but often finds that the rhythm of the songs doesn’t match her pace or mood during her runs. This discrepancy leaves her feeling out of sync, frustrated, and unable to fully immerse herself in her workout. She wishes there was a way to make the music align with her running tempo and energy levels to create a more enjoyable and motivating experience.

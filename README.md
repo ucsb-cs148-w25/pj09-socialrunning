@@ -12,4 +12,4 @@
 | Nilay Kundu | nilay-kundu |
 | Ria Sinha | riasinha |
 | Piyush Jadhav | PiyushJadhav |
-| Aneesh Agarwal | |
+| Aneesh Agarwal | aneeshtheplug|

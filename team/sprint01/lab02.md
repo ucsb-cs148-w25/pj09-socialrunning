@@ -12,16 +12,16 @@ Scribed Discussion:
 
 Plan is for 1 team member to work on recomendation algorithm, 3 on backend, 3 on frontend.
 
-Adil: 
+Adil: Committed Hello World branch to Github. No blockers.
 
-Aneesh: 
+Aneesh: Committed Hello World branch to Github. No blockers.
 
-Ron: Committed Hello World branch to Github.
+Ron: Committed Hello World branch to Github. No blockers.
 
-Olivia: Demoed Hello World app to TA for lab01.
+Olivia: Demoed Hello World app to TA for lab01. No blockers.
 
-Nilay: Committed Hello World branch to Github.
+Nilay: Committed Hello World branch to Github. No blockers.
 
-Piyush: Committed Hello World branch to Github.
+Piyush: Committed Hello World branch to Github. No blockers.
 
-Ria: Committed Hello World branch to Github.
+Ria: Committed Hello World branch to Github. No blockers.

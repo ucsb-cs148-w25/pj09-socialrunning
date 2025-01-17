@@ -14,4 +14,4 @@ git clone https://github.com/ucsb-cs148-w25/pj09-socialrunning.git
 ```
 
 2. npm install / yarn install
-3. npm expo start to launch
+3. "npx expo start" to launch

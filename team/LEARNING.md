@@ -6,7 +6,7 @@
 - Spotipy API: Adil, Ria
 
 
-### Areas where the team needs to develop it’s knowledge:
+### Areas where the team needs to develop its knowledge:
 - none at the moment
 
 ### Plans to learn/develop knowledge in tech stacks:

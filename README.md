@@ -94,10 +94,12 @@
 
 3. **Offline Mode**:
    - Allow users to pre-download songs and playlists for runs without an internet connection.
+   - Let users to manually rearrange the auto-generated playlist before starting their run.
 
 4. **Social Features**:
    - Enable sharing of playlists or running sessions with friends.
-   - Introduce leaderboards for metrics like workout consistency or total miles run.
+   - Introduce leaderboards for metrics like workout consistency or total miles run
+   - Display total run time, songs played, and estimated calories burned which can be shared on social media
 
 5. **Custom Zone Settings**:
    - Allow users to define their own BPM ranges for cardio zones, providing more flexibility and personalization.

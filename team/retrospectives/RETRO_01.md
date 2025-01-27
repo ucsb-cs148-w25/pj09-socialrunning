@@ -6,15 +6,15 @@
 
 ## Action item 1
 
-* a goal: start working on Kanban issues for MVP
-* a change/experiment: each member writes a message in the Slack for when they are planning to work on their assigned tasks. Reply to the message when working on the task.
-* a measurement: everyone has 2 PRs by this week
+* Goal: start working on Kanban issues for MVP
+* Change/experiment: each member writes a message in the Slack for when they are planning to work on their assigned tasks. Reply to the message when working on the task.
+* Measurement: everyone has 2 PRs by this week
 
 ## Action item 2
 
-* a goal: start being more thorough in daily scrums 
-* a change/experiment: provide more details about personal tasks/obstacles and create plans to achieve goal
-* a measurement: daily documentation on scrum, each member has at least 2 sentences for their current situation
+* Goal: start being more thorough in daily scrums 
+* Change/experiment: provide more details about personal tasks/obstacles and create plans to achieve goal
+* Measurement: daily documentation on scrum, each member has at least 2 sentences for their current situation
 
 ## Retro Assessment (to do at END of retro)
 

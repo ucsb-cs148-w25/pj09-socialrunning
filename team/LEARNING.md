@@ -24,3 +24,8 @@ Nilay: Watch tutorials/read documentation on Firebase week 3. Brush up on React 
 Piyush: Watch tutorials/read documentation on Firebase week 3. Learn Spotify API week 4.
 
 Ria: Brush up on Spotify API week 3. Improve React through online sources week 4.
+
+### Help Channels
+
+Aneesh: Posted a video in the git_help channel that shows how to push to repository's on GitHub using VSCode, https://ucsb-cs148-w25.slack.com/archives/C08826BRR0F/p1738018700522339 
+

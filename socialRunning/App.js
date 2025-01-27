@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { makeRedirectUri, useAuthRequest, ResponseType } from 'expo-auth-session';
+import { useAuthRequest, ResponseType } from 'expo-auth-session';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -23,12 +23,7 @@ export default function App() {
         'playlist-modify-public',
         'playlist-modify-private'
       ],
-      redirectUri: makeRedirectUri({
-        scheme: 'exp',
-        // NOTE: change to your OWN expo IP when running locally
-        // Where it says "Metro waiting on exp://<IP here>"
-        host: '169.231.26.134:8081'
-      }),
+      redirectUri: 'exp://exp.host/@rkibel/socialRunning',
     },
     {
       authorizationEndpoint: 'https://accounts.spotify.com/authorize',

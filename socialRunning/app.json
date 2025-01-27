@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ucsb.socialRunning"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,6 +24,19 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "scheme": "socialrunning",
+    "extra": {
+      "eas": {
+        "projectId": "e8bd2e42-1c03-4741-b016-8e3d48fca1a6"
+      }
+    },
+    "owner": "rkibel",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e8bd2e42-1c03-4741-b016-8e3d48fca1a6"
     }
   }
 }

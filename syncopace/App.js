@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { makeRedirectUri, useAuthRequest, ResponseType } from 'expo-auth-session';
+import { useAuthRequest, ResponseType } from 'expo-auth-session';
 
 import SignUpScreen from './SignUpScreen';
 import LoginScreen from './LoginScreen';
@@ -28,13 +28,7 @@ export default function App() {
         'playlist-modify-public',
         'playlist-modify-private'
       ],
-      redirectUri: makeRedirectUri({
-        scheme: 'exp',
-        // NOTE: change to your OWN expo IP when running locally
-        // Where it says "Metro waiting on exp://<IP here>"
-        // Ron: 169.231.26.134:8081
-        host: '192.168.0.40:8081'
-      }),
+      redirectUri: 'exp://exp.host/@rkibel/syncopace',
     },
     {
       authorizationEndpoint: 'https://accounts.spotify.com/authorize',
@@ -82,14 +76,59 @@ export default function App() {
     }
   };
 
-if (showSignUp) {
-  return <SignUpScreen onSwitchToLogin={() => setShowSignUp(false) || setShowLogin(true)} />;
-}
+  const handleLoginSuccess = (userData) => {
+    setUserInfo(userData);
+    setShowLogin(false);
+  };
 
-if (showLogin) {
-  return <LoginScreen />;
-}
+  const renderWelcomeScreen = () => (
+    <View style={styles.content}>
+      <View style={styles.titleContainer}>
+        <Text style={styles.appTitle}>syncopace</Text>
+      </View>
+      <Text style={styles.tagline}>
+        We match your pace.{'\n'}
+        You enjoy the music.
+      </Text>
 
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.signUpButton}
+          onPress={() => setShowSignUp(true)}
+        >
+          <Text style={styles.buttonText}>SIGN UP</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => setShowLogin(true)}
+        >
+          <Text style={styles.buttonText}>LOG IN</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Text style={styles.termsText}>
+        By clicking on Sign Up, you agree to syncopace's Terms and Conditions of Use.
+      </Text>
+    </View>
+  );
+
+  if (showSignUp) {
+    return <SignUpScreen
+      onSwitchToLogin={() => {
+        setShowSignUp(false);
+        setShowLogin(true);
+      }}
+      onBack={() => setShowSignUp(false)}
+    />;
+  }
+
+  if (showLogin) {
+    return <LoginScreen
+      onBack={() => setShowLogin(false)}
+      onLoginSuccess={handleLoginSuccess}
+    />;
+  }
 
   if (loading) {
     return (
@@ -111,75 +150,87 @@ if (showLogin) {
             <Text style={styles.buttonText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
+      ) : showSignUp ? (
+        <SignUpScreen
+          onSwitchToLogin={() => {
+            setShowSignUp(false);
+            setShowLogin(true);
+          }}
+          onBack={() => setShowSignUp(false)}
+        />
+      ) : showLogin ? (
+        <LoginScreen
+          onBack={() => setShowLogin(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
       ) : (
-        <View style={styles.content}>
-          <View style={styles.titleContainer}>
-            <Text style={[styles.appTitle, styles.lightText]}>SyncoPace</Text>
-          </View>
-          
-          {/* Email Sign Up Button */}
-          <TouchableOpacity
-            style={styles.spotifyButton}
-            onPress={() => setShowSignUp(true)}
-          >
-            <Text style={styles.buttonText}>Sign Up with Email</Text>
-          </TouchableOpacity>
-          
-          {/* Email Login Button */}
-          <TouchableOpacity
-            style={styles.spotifyButton}
-            onPress={() => setShowLogin(true)}
-          >
-            <Text style={styles.buttonText}>Login with Email</Text>
-          </TouchableOpacity>
-  
-          {/* Spotify OAuth Button */}
-          <TouchableOpacity
-            disabled={!request}
-            onPress={handleSignIn}
-            style={styles.spotifyButton}>
-            <Text style={styles.buttonText}>Sign Up with Spotify</Text>
-          </TouchableOpacity>
-  
-          {error && <Text style={styles.error}>{error}</Text>}
-        </View>
+        renderWelcomeScreen()
       )}
       <StatusBar style="light" />
     </View>
   );
-  
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#121212',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   content: {
+    flex: 1,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    width: '100%',
+    paddingTop: 180,
+    paddingBottom: 80,
+    paddingHorizontal: 20,
   },
   titleContainer: {
-    marginBottom: 40,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
     marginBottom: 20,
   },
-  lightText: {
-    color: '#FFFFFF',
+  appTitle: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#2196F3',
   },
-  spotifyButton: {
-    backgroundColor: '#1DB954',
-    paddingVertical: 12,
-    paddingHorizontal: 40,
+  tagline: {
+    fontSize: 24,
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: 20,
+    fontWeight: '600',
+    lineHeight: 32,
+  },
+  buttonContainer: {
+    width: '80%',
+    alignItems: 'center',
+  },
+  signUpButton: {
+    backgroundColor: '#2196F3',
+    width: '100%',
+    paddingVertical: 16,
     borderRadius: 25,
-    marginVertical: 10,
+    marginBottom: 16,
+  },
+  loginButton: {
+    backgroundColor: 'transparent',
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: '#FFFFFF',
+    marginBottom: 100,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  termsText: {
+    color: '#B3B3B3',
+    fontSize: 12,
+    textAlign: 'center',
+    paddingHorizontal: 40,
   },
   signOutButton: {
     backgroundColor: '#282828',
@@ -188,19 +239,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginVertical: 10,
   },
-  buttonText: {
+  lightText: {
     color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  error: {
-    color: '#ff4444',
-    marginTop: 10,
-  },
-  appTitle: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: '#1DB954',
   },
 });

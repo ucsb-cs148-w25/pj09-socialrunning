@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { app } from './firebaseConfig';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from './firebaseConfig';
 
-export default function SignUpScreen({ onSwitchToLogin }) {
-  const auth = getAuth(app);
-
+export default function SignUpScreen({ onSwitchToLogin, onBack }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -45,9 +43,12 @@ export default function SignUpScreen({ onSwitchToLogin }) {
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
 
-      {/* Add a Log In button */}
       <TouchableOpacity onPress={onSwitchToLogin} style={styles.loginButton}>
         <Text style={styles.buttonText}>Already have an account? Log In</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={onBack} style={styles.backButton}>
+        <Text style={styles.buttonText}>Back</Text>
       </TouchableOpacity>
     </View>
   );
@@ -84,6 +85,13 @@ const styles = StyleSheet.create({
     marginVertical: 10
   },
   loginButton: {
+    backgroundColor: '#282828',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 25,
+    marginVertical: 10
+  },
+  backButton: {
     backgroundColor: '#282828',
     paddingVertical: 12,
     paddingHorizontal: 40,

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "socialRunning",
-    "slug": "socialRunning",
+    "name": "syncopace",
+    "slug": "syncopace",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,21 +14,22 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ucsb.socialRunning"
+      "bundleIdentifier": "com.ucsb.syncopace"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.ucsb.syncopace"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "socialrunning",
+    "scheme": "syncopace",
     "extra": {
       "eas": {
-        "projectId": "e8bd2e42-1c03-4741-b016-8e3d48fca1a6"
+        "projectId": "6d96df4d-1384-4e3d-9579-c122b7d69faa"
       }
     },
     "owner": "rkibel",
@@ -36,7 +37,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/e8bd2e42-1c03-4741-b016-8e3d48fca1a6"
+      "url": "https://u.expo.dev/6d96df4d-1384-4e3d-9579-c122b7d69faa"
     }
   }
 }

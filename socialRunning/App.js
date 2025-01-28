@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'rea
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { useAuthRequest, ResponseType } from 'expo-auth-session';
+import PlaylistScreen from './components/PlaylistScreen';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -82,15 +83,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       {userInfo ? (
-        <View style={styles.content}>
-          <Text style={[styles.title, styles.lightText]}>Welcome, {userInfo.display_name}!</Text>
-          <Text style={styles.lightText}>You're successfully logged in</Text>
-          <TouchableOpacity
-            onPress={() => setUserInfo(null)}
-            style={styles.signOutButton}>
-            <Text style={styles.buttonText}>Sign Out</Text>
-          </TouchableOpacity>
-        </View>
+        <PlaylistScreen />
       ) : (
         <View style={styles.content}>
           <View style={styles.titleContainer}>

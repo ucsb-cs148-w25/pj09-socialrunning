@@ -6,12 +6,14 @@ import { useAuthRequest, ResponseType } from 'expo-auth-session';
 
 import SignUpScreen from './SignUpScreen';
 import LoginScreen from './LoginScreen';
+import CreatePlaylistScreen from './CreatePlaylistScreen'
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
   const [showSignUp, setShowSignUp] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -105,6 +107,13 @@ export default function App() {
         >
           <Text style={styles.buttonText}>LOG IN</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.createPlaylistButton}
+          onPress={() => setShowCreatePlaylist(true)}
+        >
+          <Text style={styles.buttonText}>Create Playlist</Text>
+        </TouchableOpacity>
       </View>
 
       <Text style={styles.termsText}>
@@ -128,6 +137,14 @@ export default function App() {
       onBack={() => setShowLogin(false)}
       onLoginSuccess={handleLoginSuccess}
     />;
+  }
+
+  if (showCreatePlaylist) {
+    return (
+      <CreatePlaylistScreen
+        onBack={() => setShowCreatePlaylist(false)} 
+      />
+    );
   }
 
   if (loading) {
@@ -219,6 +236,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FFFFFF',
     marginBottom: 100,
+  },
+  createPlaylistButton: {
+    backgroundColor: '#1DB954',
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 25,
+    marginTop: 16,
+    alignSelf: 'center',
   },
   buttonText: {
     color: '#FFFFFF',

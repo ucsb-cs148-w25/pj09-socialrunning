@@ -31,3 +31,4 @@ Aneesh: Posted a video in the git_help channel that shows how to push to reposit
 
 Ron: Posted Expo setup for react-native in the mobile_help channel to introduce mobile developers to an easier real-time framework, https://ucsb-cs148-w25.slack.com/archives/C088VD6044R/p1738033998252689
 
+Piyush: Posted a video on the mobile_help channel that shows students an app that helps people visualize and organize the UX journey of building their own app, https://ucsb-cs148-w25.slack.com/archives/C088VD6044R/p1738019572313969

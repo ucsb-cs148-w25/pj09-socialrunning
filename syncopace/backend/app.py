@@ -1,81 +1,141 @@
 from flask import Flask, request, jsonify
 import pandas as pd
-import random
-import requests
+import math
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+from dotenv import load_dotenv
+import ast
 import os
+
 
 app = Flask(__name__)
 
+
 # Load CSV file
-CSV_FILE_PATH = "/Users/adilahmed/Desktop/dataset.csv" 
-df = pd.read_csv(CSV_FILE_PATH)
+songs_df = pd.read_csv('tracks_features.csv')
+
 
 # Define tempo ranges for zones
 ZONE_BOUNDS = {
-    1: (60, 100),  # Slower songs
-    2: (100, 130), # Moderate pace
-    3: (130, 180)  # Faster songs
+   1: (60, 100),  # Slower songs
+   2: (100, 130), # Moderate pace
+   3: (130, 180)  # Faster songs
 }
 
-SPOTIFY_API_URL = "https://api.spotify.com/v1/tracks"
-SPOTIFY_PLAYLIST_URL = "https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
-SPOTIFY_CREATE_PLAYLIST_URL = "https://api.spotify.com/v1/users/{user_id}/playlists"
-SPOTIFY_ACCESS_TOKEN = "your_spotify_access_token"  # Replace with valid token
 
-@app.route('/recommend_songs', methods=['GET'])
-def recommend_songs():
-    zone = int(request.args.get('zone', 2))  # Default to zone 2
-    user_id = request.args.get('user_id')  # User's Spotify ID
-    market = request.args.get('market', 'US')
-    
-    if zone not in ZONE_BOUNDS:
-        return jsonify({"error": "Invalid zone. Choose between 1, 2, or 3."}), 400
+load_dotenv()  # This loads variables from .env into the environment
 
-    tempo_min, tempo_max = ZONE_BOUNDS[zone]
-    filtered_songs = df[(df['tempo'] >= tempo_min) & (df['tempo'] <= tempo_max)]
 
-    if filtered_songs.empty:
-        return jsonify({"error": "No songs found for the given zone."}), 404
-    
-    selected_songs = filtered_songs.sample(n=min(15, len(filtered_songs)))
-    track_ids = selected_songs['track_id'].tolist()
-    
-    # Call Spotify API to get track details
-    headers = {"Authorization": f"Bearer {SPOTIFY_ACCESS_TOKEN}"}
-    track_details_response = requests.get(
-        f"{SPOTIFY_API_URL}?market={market}&ids={','.join(track_ids)}",
-        headers=headers
-    )
-    track_details = track_details_response.json()
-    
-    # Create a new playlist
-    playlist_data = {
-        "name": "Your Custom zone {zone} Playlist",
-        "public": False,
-        "collaborative": False,
-        "description": "A playlist generated based on tempo zone selection."
-    }
-    create_playlist_response = requests.post(
-        SPOTIFY_CREATE_PLAYLIST_URL.format(user_id=user_id),
-        headers=headers,
-        json=playlist_data
-    )
-    
-    if create_playlist_response.status_code != 201:
-        return jsonify({"error": "Failed to create playlist."}), 500
-    
-    playlist_id = create_playlist_response.json().get("id")
-    
-    add_to_playlist_response = requests.post(
-        SPOTIFY_PLAYLIST_URL.format(playlist_id=playlist_id),
-        headers=headers,
-        json={"uris": [f"spotify:track:{tid}" for tid in track_ids]}
-    )
-    
-    if add_to_playlist_response.status_code != 201:
-        return jsonify({"error": "Failed to add songs to playlist."}), 500
-    
-    return jsonify({"playlist_id": playlist_id, "selected_tracks": track_details})
+SPOTIPY_CLIENT_ID = os.environ.get('SPOTIPY_CLIENT_ID')
+SPOTIPY_CLIENT_SECRET = os.environ.get('SPOTIPY_CLIENT_SECRET')
+SPOTIPY_REDIRECT_URI = os.environ.get('SPOTIPY_REDIRECT_URI')
+SCOPE = 'playlist-modify-public'
+
+
+# Initialize Spotipy client
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+   scope=SCOPE,
+   client_id=SPOTIPY_CLIENT_ID,
+   client_secret=SPOTIPY_CLIENT_SECRET,
+   redirect_uri=SPOTIPY_REDIRECT_URI
+))
+
+
+
+
+def search_track(track_title, track_artist):
+   """
+   Search for a track on Spotify by title and artist.
+   Returns the Spotify track ID if found, else None.
+   """
+   query = f"track:{track_title} artist:{track_artist}"
+   results = sp.search(q=query, type='track', limit=1)
+   tracks = results.get('tracks', {}).get('items', [])
+   if tracks:
+       return tracks[0]['id']
+   return None
+
+
+@app.route('/get_songs', methods=['GET'])
+def get_songs():
+   """
+   Endpoint to get songs that fit the tempo range for a given zone.
+   Expected query parameters:
+     - zone: an integer representing the desired cardio zone
+     - run_length: (optional) desired total run time in minutes, for further logic
+   """
+   # Extract query parameters
+   zone = request.args.get('zone', type=int)
+   duration = request.args.get('duration', type=int)
+  
+   if zone is None:
+       return jsonify({'error': 'The "zone" parameter is required.'}), 400
+  
+   if zone not in ZONE_BOUNDS:
+       return jsonify({'error': f'Invalid zone provided. Please choose one of {list(ZONE_BOUNDS.keys())}.'}), 400
+
+
+   # Get the tempo range for the zone
+   min_tempo, max_tempo = ZONE_BOUNDS[zone]
+
+
+   # Filter the songs dataframe based on the tempo range
+   filtered_df = songs_df[(songs_df['tempo'] >= min_tempo) & (songs_df['tempo'] <= max_tempo)]
+
+
+   average_duration = 3.5  # Estimated average duration of a song in minutes
+   num_songs = math.ceil(duration / average_duration)
+
+
+   filtered_df = filtered_df.sample(n=num_songs, random_state=42)  # random_state for reproducibility
+
+
+   track_ids = []
+   missing_songs = []
+
+
+   # For each song, find its Spotify track ID.
+   for idx, row in filtered_df.iterrows():
+       # Use the "name" column for the track title
+       track_title = row['name']
+       # Convert the string representation of artists to an actual list
+       try:
+           artist_list = ast.literal_eval(row['artists'])
+       except (ValueError, SyntaxError):
+           artist_list = [row['artists']]
+      
+       # Use the first artist in the list for the search
+       track_artist = artist_list[0] if artist_list else ""
+      
+       spotify_id = search_track(track_title, track_artist)
+       if spotify_id:
+           track_ids.append(spotify_id)
+       else:
+           missing_songs.append({'title': track_title, 'artist': track_artist})
+  
+   # Instead of creating an actual Spotify playlist, we create a virtual playlist object.
+   # Optionally, convert each track ID to a Spotify URI: "spotify:track:{track_id}"
+   track_uris = [f"spotify:track:{tid}" for tid in track_ids]
+  
+   virtual_playlist = {
+       'name': f"Syncopace Zone {zone} Playlist",
+       'tracks': track_uris,  # or simply 'track_ids': track_ids if preferred
+       'num_tracks': len(track_ids)
+   }
+  
+   response = {
+       'virtual_playlist': virtual_playlist,
+       'songs': filtered_df.to_dict(orient='records'),
+       'missing_songs': missing_songs  # Songs that weren't found on Spotify
+   }
+   return jsonify(response)
+
+
+   # Convert the filtered DataFrame to a list of dictionaries
+   # songs_list = filtered_df.to_dict(orient='records')
+  
+   # return jsonify({'songs': songs_list})
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+   app.run(debug=True)

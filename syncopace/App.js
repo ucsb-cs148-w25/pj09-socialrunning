@@ -6,12 +6,14 @@ import { useAuthRequest, ResponseType } from 'expo-auth-session';
 
 import SignUpScreen from './SignUpScreen';
 import LoginScreen from './LoginScreen';
+import CreatePlaylistScreen from './CreatePlaylistScreen'
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
   const [showSignUp, setShowSignUp] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -130,6 +132,14 @@ export default function App() {
     />;
   }
 
+  if (showCreatePlaylist) {
+    return (
+      <CreatePlaylistScreen
+        onBack={() => setShowCreatePlaylist(false)} 
+      />
+    );
+  }
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -145,8 +155,15 @@ export default function App() {
           <Text style={[styles.title, styles.lightText]}>Welcome, {userInfo.display_name}!</Text>
           <Text style={styles.lightText}>You're successfully logged in</Text>
           <TouchableOpacity
+            style={styles.createPlaylistButton}
+            onPress={() => setShowCreatePlaylist(true)}
+          >
+            <Text style={styles.buttonText}>Create Playlist</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() => setUserInfo(null)}
-            style={styles.signOutButton}>
+            style={styles.signOutButton}
+          >
             <Text style={styles.buttonText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
@@ -219,6 +236,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FFFFFF',
     marginBottom: 100,
+  },
+  createPlaylistButton: {
+    backgroundColor: '#1DB954',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 25,
+    marginTop: 10,
+    alignSelf: 'center',
   },
   buttonText: {
     color: '#FFFFFF',

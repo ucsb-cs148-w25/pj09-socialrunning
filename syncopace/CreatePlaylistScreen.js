@@ -1,119 +1,122 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Picker, ScrollView } from 'react-native';
+import { 
+  View, Text, TextInput, TouchableOpacity, 
+  StyleSheet, ScrollView, Keyboard, TouchableWithoutFeedback 
+} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 export default function CreatePlaylistScreen({ onBack }) {
   const [cardioZone, setCardioZone] = useState('');
   const [genre, setGenre] = useState('');
   const [duration, setDuration] = useState('');
   const [error, setError] = useState('');
-  const [playlistData, setPlaylistData] = useState(null);
 
   const handleCreatePlaylist = () => {
-    if (!validateForm()) {
-      return;
-    }
-  
+    if (!validateForm()) return;
+
     const playlistData = {
-      genre: genre,
+      genre,
       duration: parseInt(duration, 10),
-      cardioZone: cardioZone,
+      cardioZone,
     };
-  
-    // Show the playlist data as an alert
+
     alert(JSON.stringify(playlistData, null, 2));
   };
-  
+
   const validateForm = () => {
     if (!cardioZone || !genre || !duration) {
       setError('Please fill in all fields with valid data');
       return false;
     }
-  
-    const numericDuration = parseInt(duration, 10);     // Round down for floats
+
+    const numericDuration = parseInt(duration, 10);
     if (!Number.isInteger(numericDuration) || numericDuration <= 0) {
       setError('Please enter a valid positive duration.');
       return false;
     }
-  
-    setError(''); 
+
+    setError('');
     return true;
   };
 
-  // Check if form is valid to enable the "Create" button
-  const isFormValid = genre !== 'none' && cardioZone !== 'none' && duration !== '';
-
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>← Back</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.title}>Create Playlist</Text>
-
-      {/* Cardio Zone Dropdown */}
-      <Text style={styles.label}>Cardio Zone:</Text>
-      <Picker
-        selectedValue={cardioZone}
-        onValueChange={(itemValue) => setCardioZone(itemValue)}
-        style={styles.dropdown}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer} 
+        keyboardShouldPersistTaps="handled" 
+        keyboardDismissMode="on-drag"
       >
-        <Picker.Item label="Choose a zone" value="none" />
-        <Picker.Item label="Warm Up: 50-60%" value="zone1" />
-        <Picker.Item label="Light Jog: 60-70%" value="zone2" />
-        <Picker.Item label="Power Jog: 70-80%" value="zone3" />
-        <Picker.Item label="Steady Pace: 80-90%" value="zone4" />
-        <Picker.Item label="Sprint Zone: 90-100%" value="zone5" />
-      </Picker>
+        <View style={styles.container}>
+          <TouchableOpacity onPress={onBack} style={styles.backButton}>
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
 
-      {/* Genre Dropdown */}
-      <Text style={styles.label}>Genre:</Text>
-      <Picker
-        selectedValue={genre}
-        onValueChange={(itemValue) => setGenre(itemValue)}
-        style={styles.dropdown}
-      >
-        <Picker.Item label="Choose a genre" value="none" />
-        <Picker.Item label="Pop" value="pop" />
-        <Picker.Item label="Hip-Hop" value="hip-hop" />
-        <Picker.Item label="Rap" value="rap" />
-        <Picker.Item label="Rock" value="rock" />
-        <Picker.Item label="Dubstep" value="dubstep" />
-        <Picker.Item label="Melodic Bass" value="melodic-bass" />
-        <Picker.Item label="House" value="house" />
-      </Picker>
+          <Text style={styles.title}>Create Playlist</Text>
 
-      {/* Duration Input */}
-      <Text style={styles.label}>Duration (minutes):</Text>
-      <TextInput
-        style={[styles.input, error ? styles.inputError : null]}
-        keyboardType="numeric"
-        placeholder="Enter duration"
-        value={duration}
-        onChangeText={setDuration}
-      />
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {/* Dropdowns */}
+          <Text style={styles.label}>Intensity:</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={cardioZone}
+              onValueChange={(itemValue) => setCardioZone(itemValue)}
+              style={styles.picker}
+              dropdownIconColor="#FFFFFF"
+            >
+              <Picker.Item label="Choose a zone" value="" color="#FFFFFF" />
+              <Picker.Item label="Warm Up: 50-60%" value="zone1" color="#FFFFFF" />
+              <Picker.Item label="Light Jog: 60-70%" value="zone2" color="#FFFFFF" />
+              <Picker.Item label="Power Jog: 70-80%" value="zone3" color="#FFFFFF" />
+              <Picker.Item label="Steady Pace: 80-90%" value="zone4" color="#FFFFFF" />
+              <Picker.Item label="Sprint Zone: 90-100%" value="zone5" color="#FFFFFF" />
+            </Picker>
+          </View>
 
-      <TouchableOpacity
-        onPress={handleCreatePlaylist}
-        style={[styles.createButton, !isFormValid ? styles.disabledButton : null]}
-        disabled={!isFormValid}
-      >
-        <Text style={styles.createButtonText}>Create</Text>
-      </TouchableOpacity>
+          <Text style={styles.label}>Genre:</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={genre}
+              onValueChange={(itemValue) => setGenre(itemValue)}
+              style={styles.picker}
+              dropdownIconColor="#FFFFFF"
+            >
+              <Picker.Item label="Choose a genre" value="" color="#FFFFFF" />
+              <Picker.Item label="Pop" value="pop" color="#FFFFFF" />
+              <Picker.Item label="Hip-Hop" value="hip-hop" color="#FFFFFF" />
+              <Picker.Item label="Rap" value="rap" color="#FFFFFF" />
+              <Picker.Item label="Rock" value="rock" color="#FFFFFF" />
+              <Picker.Item label="Dubstep" value="dubstep" color="#FFFFFF" />
+              <Picker.Item label="Melodic Bass" value="melodic-bass" color="#FFFFFF" />
+              <Picker.Item label="House" value="house" color="#FFFFFF" />
+            </Picker>
+          </View>
 
-      {/* Display Playlist JSON if available */}
-      {playlistData && (
-        <ScrollView style={styles.playlistDataContainer}>
-          <Text style={styles.playlistDataText}>
-            {JSON.stringify(playlistData, null, 2)}
-          </Text>
-        </ScrollView>
-      )}
-    </View>
+          {/* Duration Input */}
+          <Text style={styles.label}>Duration (minutes):</Text>
+          <TextInput
+            style={[styles.input, error ? styles.inputError : null]}
+            keyboardType="numeric"
+            placeholder="Enter duration"
+            placeholderTextColor="#888"
+            value={duration}
+            onChangeText={setDuration}
+            returnKeyType="done"
+            onSubmitEditing={Keyboard.dismiss}
+          />
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+          <TouchableOpacity onPress={handleCreatePlaylist} style={styles.createButton}>
+            <Text style={styles.createButtonText}>Create</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: '#121212',
@@ -143,18 +146,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
-  dropdown: {
-    backgroundColor: '#282828',
-    color: '#FFFFFF',
-    marginBottom: 20,
+  pickerContainer: {
+    backgroundColor: '#282828',  
+    borderRadius: 8,
+    marginBottom: 20,  
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  picker: {
+    color: '#FFFFFF',  
   },
   input: {
     backgroundColor: '#282828',
     color: '#FFFFFF',
-    borderRadius: 4,
+    borderRadius: 8,
     padding: 16,
-    marginBottom: 16,
     fontSize: 16,
+    marginBottom: 16,
   },
   inputError: {
     borderColor: 'red',
@@ -176,19 +184,5 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  disabledButton: {
-    backgroundColor: '#555',
-  },
-  playlistDataContainer: {
-    marginTop: 20,
-    backgroundColor: '#282828',
-    padding: 10,
-    borderRadius: 4,
-  },
-  playlistDataText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'monospace',
   },
 });

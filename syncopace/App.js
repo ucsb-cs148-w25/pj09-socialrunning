@@ -107,13 +107,6 @@ export default function App() {
         >
           <Text style={styles.buttonText}>LOG IN</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.createPlaylistButton}
-          onPress={() => setShowCreatePlaylist(true)}
-        >
-          <Text style={styles.buttonText}>Create Playlist</Text>
-        </TouchableOpacity>
       </View>
 
       <Text style={styles.termsText}>
@@ -162,8 +155,15 @@ export default function App() {
           <Text style={[styles.title, styles.lightText]}>Welcome, {userInfo.display_name}!</Text>
           <Text style={styles.lightText}>You're successfully logged in</Text>
           <TouchableOpacity
+            style={styles.createPlaylistButton}
+            onPress={() => setShowCreatePlaylist(true)}
+          >
+            <Text style={styles.buttonText}>Create Playlist</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() => setUserInfo(null)}
-            style={styles.signOutButton}>
+            style={styles.signOutButton}
+          >
             <Text style={styles.buttonText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
@@ -239,10 +239,10 @@ const styles = StyleSheet.create({
   },
   createPlaylistButton: {
     backgroundColor: '#1DB954',
-    width: '100%',
-    paddingVertical: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 40,
     borderRadius: 25,
-    marginTop: 16,
+    marginTop: 10,
     alignSelf: 'center',
   },
   buttonText: {

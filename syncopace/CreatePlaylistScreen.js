@@ -1,37 +1,96 @@
 import React, { useState } from 'react';
 import { 
   View, Text, TextInput, TouchableOpacity, 
-  StyleSheet, ScrollView, Keyboard, TouchableWithoutFeedback 
+  StyleSheet, ScrollView, Keyboard, TouchableWithoutFeedback, 
+  Alert, ActivityIndicator
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { useNavigation } from '@react-navigation/native';
 
-export default function CreatePlaylistScreen({ onBack }) {
+export default function CreatePlaylistScreen() {
+  const navigation = useNavigation();
   const [cardioZone, setCardioZone] = useState('');
-  const [genre, setGenre] = useState('');
   const [duration, setDuration] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleCreatePlaylist = () => {
+  const handleCreatePlaylist = async () => {
     if (!validateForm()) return;
 
-    const playlistData = {
-      genre,
-      duration: parseInt(duration, 10),
-      cardioZone,
+    setIsLoading(true);
+    setError('');
+
+    // Map zones to backend expected values
+    const zoneMapping = {
+      'zone1': 1,
+      'zone2': 2,
+      'zone3': 3
     };
 
-    alert(JSON.stringify(playlistData, null, 2));
+    try {
+      // Use your actual backend URL here
+      const backendUrl = 'http://192.168.0.87:5001/get_songs';
+
+      const response = await fetch(
+        `${backendUrl}?zone=${zoneMapping[cardioZone]}&duration=${duration}`,
+        {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data || !data.virtual_playlist) {
+        throw new Error('Invalid response format from server');
+      }
+
+      // Navigate to playlist screen with the received data
+      navigation.navigate('PlaylistScreen', {
+        playlist: data.virtual_playlist,
+        songs: data.songs,
+        missingSongs: data.missing_songs
+      });
+
+    } catch (err) {
+      console.error('Error creating playlist:', err);
+      Alert.alert(
+        'Error',
+        'There was an error creating your playlist. Please try again.',
+        [{ text: 'OK' }]
+      );
+      setError('Failed to create playlist');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const validateForm = () => {
-    if (!cardioZone || !genre || !duration) {
-      setError('Please fill in all fields with valid data');
+    if (!cardioZone) {
+      setError('Please select a cardio zone');
+      return false;
+    }
+
+    if (!duration) {
+      setError('Please enter a duration');
       return false;
     }
 
     const numericDuration = parseInt(duration, 10);
-    if (!Number.isInteger(numericDuration) || numericDuration <= 0) {
-      setError('Please enter a valid positive duration.');
+    if (isNaN(numericDuration) || numericDuration <= 0) {
+      setError('Please enter a valid positive duration');
+      return false;
+    }
+
+    if (numericDuration > 180) {
+      setError('Maximum duration is 180 minutes');
       return false;
     }
 
@@ -43,17 +102,18 @@ export default function CreatePlaylistScreen({ onBack }) {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ScrollView 
         contentContainerStyle={styles.scrollContainer} 
-        keyboardShouldPersistTaps="handled" 
-        keyboardDismissMode="on-drag"
+        keyboardShouldPersistTaps="handled"
       >
         <View style={styles.container}>
-          <TouchableOpacity onPress={onBack} style={styles.backButton}>
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()} 
+            style={styles.backButton}
+          >
             <Text style={styles.backButtonText}>← Back</Text>
           </TouchableOpacity>
 
           <Text style={styles.title}>Create Playlist</Text>
 
-          {/* Dropdowns */}
           <Text style={styles.label}>Intensity:</Text>
           <View style={styles.pickerContainer}>
             <Picker
@@ -63,34 +123,12 @@ export default function CreatePlaylistScreen({ onBack }) {
               dropdownIconColor="#FFFFFF"
             >
               <Picker.Item label="Choose a zone" value="" color="#FFFFFF" />
-              <Picker.Item label="Warm Up: 50-60%" value="zone1" color="#FFFFFF" />
-              <Picker.Item label="Light Jog: 60-70%" value="zone2" color="#FFFFFF" />
-              <Picker.Item label="Power Jog: 70-80%" value="zone3" color="#FFFFFF" />
-              <Picker.Item label="Steady Pace: 80-90%" value="zone4" color="#FFFFFF" />
-              <Picker.Item label="Sprint Zone: 90-100%" value="zone5" color="#FFFFFF" />
+              <Picker.Item label="Zone 1 (60-100 BPM)" value="zone1" color="#FFFFFF" />
+              <Picker.Item label="Zone 2 (100-130 BPM)" value="zone2" color="#FFFFFF" />
+              <Picker.Item label="Zone 3 (130-180 BPM)" value="zone3" color="#FFFFFF" />
             </Picker>
           </View>
 
-          <Text style={styles.label}>Genre:</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={genre}
-              onValueChange={(itemValue) => setGenre(itemValue)}
-              style={styles.picker}
-              dropdownIconColor="#FFFFFF"
-            >
-              <Picker.Item label="Choose a genre" value="" color="#FFFFFF" />
-              <Picker.Item label="Pop" value="pop" color="#FFFFFF" />
-              <Picker.Item label="Hip-Hop" value="hip-hop" color="#FFFFFF" />
-              <Picker.Item label="Rap" value="rap" color="#FFFFFF" />
-              <Picker.Item label="Rock" value="rock" color="#FFFFFF" />
-              <Picker.Item label="Dubstep" value="dubstep" color="#FFFFFF" />
-              <Picker.Item label="Melodic Bass" value="melodic-bass" color="#FFFFFF" />
-              <Picker.Item label="House" value="house" color="#FFFFFF" />
-            </Picker>
-          </View>
-
-          {/* Duration Input */}
           <Text style={styles.label}>Duration (minutes):</Text>
           <TextInput
             style={[styles.input, error ? styles.inputError : null]}
@@ -99,13 +137,25 @@ export default function CreatePlaylistScreen({ onBack }) {
             placeholderTextColor="#888"
             value={duration}
             onChangeText={setDuration}
+            maxLength={3}
             returnKeyType="done"
-            onSubmitEditing={Keyboard.dismiss}
           />
+
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-          <TouchableOpacity onPress={handleCreatePlaylist} style={styles.createButton}>
-            <Text style={styles.createButtonText}>Create</Text>
+          <TouchableOpacity 
+            onPress={handleCreatePlaylist} 
+            style={[
+              styles.createButton,
+              isLoading && styles.createButtonDisabled
+            ]}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.createButtonText}>Create</Text>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -147,14 +197,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   pickerContainer: {
-    backgroundColor: '#282828',  
+    backgroundColor: '#282828',
     borderRadius: 8,
-    marginBottom: 20,  
+    marginBottom: 20,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
   picker: {
-    color: '#FFFFFF',  
+    color: '#FFFFFF',
   },
   input: {
     backgroundColor: '#282828',
@@ -180,9 +230,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
+  createButtonDisabled: {
+    backgroundColor: '#1DB95480',
+  },
   createButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
-  },
+  }
 });

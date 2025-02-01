@@ -52,6 +52,7 @@ export default function LoginScreen({ onBack, onLoginSuccess }) {
           uid: userData.id,
           spotify_token: access_token
         });
+        navigation.navigate('Main', { userData: userData });
       }
     } catch (err) {
       setError('Failed to login with Spotify');

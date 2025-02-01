@@ -1,19 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { useAuthRequest, ResponseType } from 'expo-auth-session';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import SignUpScreen from './SignUpScreen';
 import LoginScreen from './LoginScreen';
-import CreatePlaylistScreen from './CreatePlaylistScreen'
+import CreatePlaylistScreen from './CreatePlaylistScreen';
+import PlaylistScreen from './PlaylistScreen';
 
 WebBrowser.maybeCompleteAuthSession();
+const Stack = createStackNavigator();
 
-export default function App() {
-  const [showSignUp, setShowSignUp] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
-  const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
+function MainScreen({ navigation }) {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -39,7 +40,9 @@ export default function App() {
   );
 
   useEffect(() => {
-    handleSignInResponse();
+    if (response?.type === 'success') {
+      handleSignInResponse();
+    }
   }, [response]);
 
   const handleSignInResponse = async () => {
@@ -63,12 +66,10 @@ export default function App() {
       } finally {
         setLoading(false);
       }
-    } else if (response?.type === 'error') {
-      setError('Authentication failed');
     }
   };
 
-  const handleSignIn = async () => {
+  const handleSpotifyLogin = async () => {
     setError(null);
     try {
       await promptAsync();
@@ -77,68 +78,6 @@ export default function App() {
       console.error(e);
     }
   };
-
-  const handleLoginSuccess = (userData) => {
-    setUserInfo(userData);
-    setShowLogin(false);
-  };
-
-  const renderWelcomeScreen = () => (
-    <View style={styles.content}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.appTitle}>syncopace</Text>
-      </View>
-      <Text style={styles.tagline}>
-        We match your pace.{'\n'}
-        You enjoy the music.
-      </Text>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.signUpButton}
-          onPress={() => setShowSignUp(true)}
-        >
-          <Text style={styles.buttonText}>SIGN UP</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => setShowLogin(true)}
-        >
-          <Text style={styles.buttonText}>LOG IN</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.termsText}>
-        By clicking on Sign Up, you agree to syncopace's Terms and Conditions of Use.
-      </Text>
-    </View>
-  );
-
-  if (showSignUp) {
-    return <SignUpScreen
-      onSwitchToLogin={() => {
-        setShowSignUp(false);
-        setShowLogin(true);
-      }}
-      onBack={() => setShowSignUp(false)}
-    />;
-  }
-
-  if (showLogin) {
-    return <LoginScreen
-      onBack={() => setShowLogin(false)}
-      onLoginSuccess={handleLoginSuccess}
-    />;
-  }
-
-  if (showCreatePlaylist) {
-    return (
-      <CreatePlaylistScreen
-        onBack={() => setShowCreatePlaylist(false)} 
-      />
-    );
-  }
 
   if (loading) {
     return (
@@ -156,7 +95,7 @@ export default function App() {
           <Text style={styles.lightText}>You're successfully logged in</Text>
           <TouchableOpacity
             style={styles.createPlaylistButton}
-            onPress={() => setShowCreatePlaylist(true)}
+            onPress={() => navigation.navigate('CreatePlaylist')}
           >
             <Text style={styles.buttonText}>Create Playlist</Text>
           </TouchableOpacity>
@@ -167,24 +106,65 @@ export default function App() {
             <Text style={styles.buttonText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
-      ) : showSignUp ? (
-        <SignUpScreen
-          onSwitchToLogin={() => {
-            setShowSignUp(false);
-            setShowLogin(true);
-          }}
-          onBack={() => setShowSignUp(false)}
-        />
-      ) : showLogin ? (
-        <LoginScreen
-          onBack={() => setShowLogin(false)}
-          onLoginSuccess={handleLoginSuccess}
-        />
       ) : (
-        renderWelcomeScreen()
+        <View style={styles.content}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.appTitle}>syncopace</Text>
+          </View>
+          <Text style={styles.tagline}>
+            We match your pace.{'\n'}
+            You enjoy the music.
+          </Text>
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.spotifyButton}
+              onPress={handleSpotifyLogin}
+            >
+              <Text style={styles.buttonText}>LOGIN WITH SPOTIFY</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.signUpButton}
+              onPress={() => navigation.navigate('SignUp')}
+            >
+              <Text style={styles.buttonText}>SIGN UP</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={() => navigation.navigate('Login')}
+            >
+              <Text style={styles.buttonText}>LOG IN</Text>
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.termsText}>
+            By clicking on Sign Up, you agree to syncopace's Terms and Conditions of Use.
+          </Text>
+        </View>
       )}
       <StatusBar style="light" />
     </View>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          cardStyle: { backgroundColor: '#121212' }
+        }}
+      >
+        <Stack.Screen name="Main" component={MainScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="CreatePlaylist" component={CreatePlaylistScreen} />
+        <Stack.Screen name="PlaylistScreen" component={PlaylistScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
@@ -220,6 +200,13 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '80%',
     alignItems: 'center',
+  },
+  spotifyButton: {
+    backgroundColor: '#1DB954',
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 25,
+    marginBottom: 16,
   },
   signUpButton: {
     backgroundColor: '#2196F3',
@@ -266,5 +253,9 @@ const styles = StyleSheet.create({
   },
   lightText: {
     color: '#FFFFFF',
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 10,
   },
 });

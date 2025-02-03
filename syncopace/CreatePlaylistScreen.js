@@ -29,7 +29,7 @@ export default function CreatePlaylistScreen() {
 
     try {
       // Use your actual backend URL here
-      const backendUrl = 'http://192.168.0.87:5001/get_songs';
+      const backendUrl = 'http://169.231.215.167:5001/get_songs';
 
       const response = await fetch(
         `${backendUrl}?zone=${zoneMapping[cardioZone]}&duration=${duration}`,
@@ -131,7 +131,7 @@ export default function CreatePlaylistScreen() {
 
           <Text style={styles.label}>Duration (minutes):</Text>
           <TextInput
-            style={[styles.input, error ? styles.inputError : null]}
+            style={[styles.input]}
             keyboardType="numeric"
             placeholder="Enter duration"
             placeholderTextColor="#888"
@@ -141,13 +141,12 @@ export default function CreatePlaylistScreen() {
             returnKeyType="done"
           />
 
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
           <TouchableOpacity 
             onPress={handleCreatePlaylist} 
             style={[
               styles.createButton,
-              isLoading && styles.createButtonDisabled
+              isLoading && styles.createButtonDisabled,
+              error ? styles.inputError : null
             ]}
             disabled={isLoading}
           >
@@ -157,6 +156,7 @@ export default function CreatePlaylistScreen() {
               <Text style={styles.createButtonText}>Create</Text>
             )}
           </TouchableOpacity>
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>
       </ScrollView>
     </TouchableWithoutFeedback>
@@ -217,6 +217,10 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: 'red',
     borderWidth: 1,
+    borderRadius: 25,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 20,
   },
   errorText: {
     color: 'red',

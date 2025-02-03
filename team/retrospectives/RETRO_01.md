@@ -16,7 +16,7 @@
 * Change/experiment: provide more details about personal tasks/obstacles and create plans to achieve goal
 * Measurement: daily documentation on scrum, each member has at least 2 sentences for their current situation
 
-## Retro Assessment
+## Retro Assessment (to do at END of retro)
 
 * Format: We used the start/stop/continue format for this retro. Each member comes up with actions/habits to start, stop, continue doing, respectively (in Slack channel). All members voted on items they deemed important and top items were discussed to determine future steps. 
 * Reflection: Effective at bringing out ideas to improve productivity for all members. Slow at first, but made steady progress once everyone was focused.

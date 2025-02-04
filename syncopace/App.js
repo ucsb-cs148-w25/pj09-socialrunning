@@ -1,15 +1,21 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
-import { useEffect, useState } from 'react';
-import { useAuthRequest, ResponseType } from 'expo-auth-session';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { StatusBar } from "expo-status-bar";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import * as WebBrowser from "expo-web-browser";
+import { useEffect, useState } from "react";
+import { useAuthRequest, ResponseType } from "expo-auth-session";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
-import SignUpScreen from './SignUpScreen';
-import LoginScreen from './LoginScreen';
-import CreatePlaylistScreen from './CreatePlaylistScreen';
-import PlaylistScreen from './PlaylistScreen';
+import SignUpScreen from "./SignUpScreen";
+import LoginScreen from "./LoginScreen";
+import CreatePlaylistScreen from "./CreatePlaylistScreen";
+import PlaylistScreen from "./PlaylistScreen";
 
 WebBrowser.maybeCompleteAuthSession();
 const Stack = createStackNavigator();
@@ -23,37 +29,37 @@ function MainScreen({ navigation }) {
   const [request, response, promptAsync] = useAuthRequest(
     {
       responseType: ResponseType.Token,
-      clientId: '15583efa68154211a31ca3a901d13c71',
+      clientId: "15583efa68154211a31ca3a901d13c71",
       scopes: [
-        'user-read-email',
-        'user-read-private',
-        'playlist-read-private',
-        'playlist-modify-public',
-        'playlist-modify-private'
+        "user-read-email",
+        "user-read-private",
+        "playlist-read-private",
+        "playlist-modify-public",
+        "playlist-modify-private",
       ],
-      redirectUri: 'exp://exp.host/@rkibel/syncopace',
+      redirectUri: "exp://exp.host/@rkibel/syncopace",
     },
     {
-      authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-      tokenEndpoint: 'https://accounts.spotify.com/api/token',
+      authorizationEndpoint: "https://accounts.spotify.com/authorize",
+      tokenEndpoint: "https://accounts.spotify.com/api/token",
     }
   );
 
   useEffect(() => {
-    if (response?.type === 'success') {
+    if (response?.type === "success") {
       handleSignInResponse();
     }
   }, [response]);
 
   const handleSignInResponse = async () => {
-    if (response?.type === 'success') {
+    if (response?.type === "success") {
       setLoading(true);
       setError(null);
       try {
         const { access_token } = response.params;
         setAccessToken(access_token);
 
-        const userResponse = await fetch('https://api.spotify.com/v1/me', {
+        const userResponse = await fetch("https://api.spotify.com/v1/me", {
           headers: {
             Authorization: `Bearer ${access_token}`,
           },
@@ -61,7 +67,7 @@ function MainScreen({ navigation }) {
         const userData = await userResponse.json();
         setUserInfo(userData);
       } catch (e) {
-        setError('Failed to get user information');
+        setError("Failed to get user information");
         console.error(e);
       } finally {
         setLoading(false);
@@ -74,7 +80,7 @@ function MainScreen({ navigation }) {
     try {
       await promptAsync();
     } catch (e) {
-      setError('Failed to start sign in');
+      setError("Failed to start sign in");
       console.error(e);
     }
   };
@@ -91,11 +97,13 @@ function MainScreen({ navigation }) {
     <View style={styles.container}>
       {userInfo ? (
         <View style={styles.content}>
-          <Text style={[styles.title, styles.lightText]}>Welcome, {userInfo.display_name}!</Text>
+          <Text style={[styles.title, styles.lightText]}>
+            Welcome, {userInfo.display_name}!
+          </Text>
           <Text style={styles.lightText}>You're successfully logged in</Text>
           <TouchableOpacity
             style={styles.createPlaylistButton}
-            onPress={() => navigation.navigate('CreatePlaylist')}
+            onPress={() => navigation.navigate("CreatePlaylist", {accessToken})}
           >
             <Text style={styles.buttonText}>Create Playlist</Text>
           </TouchableOpacity>
@@ -112,7 +120,7 @@ function MainScreen({ navigation }) {
             <Text style={styles.appTitle}>syncopace</Text>
           </View>
           <Text style={styles.tagline}>
-            We match your pace.{'\n'}
+            We match your pace.{"\n"}
             You enjoy the music.
           </Text>
 
@@ -126,21 +134,22 @@ function MainScreen({ navigation }) {
 
             <TouchableOpacity
               style={styles.signUpButton}
-              onPress={() => navigation.navigate('SignUp')}
+              onPress={() => navigation.navigate("SignUp")}
             >
               <Text style={styles.buttonText}>SIGN UP</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.loginButton}
-              onPress={() => navigation.navigate('Login')}
+              onPress={() => navigation.navigate("Login")}
             >
               <Text style={styles.buttonText}>LOG IN</Text>
             </TouchableOpacity>
           </View>
 
           <Text style={styles.termsText}>
-            By clicking on Sign Up, you agree to syncopace's Terms and Conditions of Use.
+            By clicking on Sign Up, you agree to syncopace's Terms and
+            Conditions of Use.
           </Text>
         </View>
       )}
@@ -155,7 +164,7 @@ export default function App() {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          cardStyle: { backgroundColor: '#121212' }
+          cardStyle: { backgroundColor: "#121212" },
         }}
       >
         <Stack.Screen name="Main" component={MainScreen} />
@@ -171,12 +180,12 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: "#121212",
   },
   content: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingTop: 180,
     paddingBottom: 80,
     paddingHorizontal: 20,
@@ -186,73 +195,73 @@ const styles = StyleSheet.create({
   },
   appTitle: {
     fontSize: 48,
-    fontWeight: 'bold',
-    color: '#2196F3',
+    fontWeight: "bold",
+    color: "#2196F3",
   },
   tagline: {
     fontSize: 24,
-    color: '#FFFFFF',
-    textAlign: 'center',
+    color: "#FFFFFF",
+    textAlign: "center",
     marginBottom: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     lineHeight: 32,
   },
   buttonContainer: {
-    width: '80%',
-    alignItems: 'center',
+    width: "80%",
+    alignItems: "center",
   },
   spotifyButton: {
-    backgroundColor: '#1DB954',
-    width: '100%',
+    backgroundColor: "#1DB954",
+    width: "100%",
     paddingVertical: 16,
     borderRadius: 25,
     marginBottom: 16,
   },
   signUpButton: {
-    backgroundColor: '#2196F3',
-    width: '100%',
+    backgroundColor: "#2196F3",
+    width: "100%",
     paddingVertical: 16,
     borderRadius: 25,
     marginBottom: 16,
   },
   loginButton: {
-    backgroundColor: 'transparent',
-    width: '100%',
+    backgroundColor: "transparent",
+    width: "100%",
     paddingVertical: 16,
     borderRadius: 25,
     borderWidth: 1,
-    borderColor: '#FFFFFF',
+    borderColor: "#FFFFFF",
     marginBottom: 100,
   },
   createPlaylistButton: {
-    backgroundColor: '#1DB954',
+    backgroundColor: "#1DB954",
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
     marginTop: 10,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
   termsText: {
-    color: '#B3B3B3',
+    color: "#B3B3B3",
     fontSize: 12,
-    textAlign: 'center',
+    textAlign: "center",
     paddingHorizontal: 40,
   },
   signOutButton: {
-    backgroundColor: '#282828',
+    backgroundColor: "#282828",
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
     marginVertical: 10,
   },
   lightText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
   title: {
     fontSize: 24,

@@ -1,43 +1,52 @@
-import React, { useState } from 'react';
-import { 
-  View, Text, TextInput, TouchableOpacity, 
-  StyleSheet, ScrollView, Keyboard, TouchableWithoutFeedback, 
-  Alert, ActivityIndicator
-} from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from "react";
+import { useRoute } from "@react-navigation/native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Keyboard,
+  TouchableWithoutFeedback,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { useNavigation } from "@react-navigation/native";
 
 export default function CreatePlaylistScreen() {
+  const route = useRoute();
+  const accessToken = route.params?.accessToken;
   const navigation = useNavigation();
-  const [cardioZone, setCardioZone] = useState('');
-  const [duration, setDuration] = useState('');
-  const [error, setError] = useState('');
+  const [cardioZone, setCardioZone] = useState("");
+  const [duration, setDuration] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCreatePlaylist = async () => {
     if (!validateForm()) return;
 
     setIsLoading(true);
-    setError('');
+    setError("");
 
-    // Map zones to backend expected values
     const zoneMapping = {
-      'zone1': 1,
-      'zone2': 2,
-      'zone3': 3
+      zone1: 1,
+      zone2: 2,
+      zone3: 3,
     };
 
     try {
-      // Use your actual backend URL here
-      const backendUrl = 'http://192.168.0.87:5001/get_songs';
+      const backendUrl = "http://192.168.0.12:5001/get_songs";
 
+      // Fetch songs based on the selected cardio zone and duration
       const response = await fetch(
         `${backendUrl}?zone=${zoneMapping[cardioZone]}&duration=${duration}`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            Accept: "application/json",
+            "Content-Type": "application/json",
           },
         }
       );
@@ -49,24 +58,56 @@ export default function CreatePlaylistScreen() {
       const data = await response.json();
 
       if (!data || !data.virtual_playlist) {
-        throw new Error('Invalid response format from server');
+        throw new Error("Invalid response format from server");
       }
 
-      // Navigate to playlist screen with the received data
-      navigation.navigate('PlaylistScreen', {
-        playlist: data.virtual_playlist,
-        songs: data.songs,
-        missingSongs: data.missing_songs
+      const trackUris = data.virtual_playlist.tracks; // Spotify URIs
+      if (trackUris.length === 0) {
+        throw new Error("No valid songs found.");
+      }
+
+      // Now create the playlist in the user's Spotify account
+      const createPlaylistUrl = "http://192.168.0.12:5001/create_playlist";
+
+      const createPlaylistResponse = await fetch(createPlaylistUrl, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          access_token: accessToken, // Ensure this is being passed from App.js
+          playlist_name: `Syncopace Zone ${zoneMapping[cardioZone]} Playlist`,
+          track_uris: trackUris,
+        }),
       });
 
-    } catch (err) {
-      console.error('Error creating playlist:', err);
+      if (!createPlaylistResponse.ok) {
+        throw new Error(`Failed to create playlist in Spotify`);
+      }
+
+      const playlistData = await createPlaylistResponse.json();
+
       Alert.alert(
-        'Error',
-        'There was an error creating your playlist. Please try again.',
-        [{ text: 'OK' }]
+        "Playlist Created",
+        `Your playlist has been added to your Spotify!`,
+        [{ text: "OK" }]
       );
-      setError('Failed to create playlist');
+
+      // Navigate to the PlaylistScreen
+      navigation.navigate("PlaylistScreen", {
+        playlist: playlistData,
+        songs: data.songs,
+        missingSongs: data.missing_songs,
+      });
+    } catch (err) {
+      console.error("Error creating playlist:", err);
+      Alert.alert(
+        "Error",
+        "There was an error creating your playlist. Please try again.",
+        [{ text: "OK" }]
+      );
+      setError("Failed to create playlist");
     } finally {
       setIsLoading(false);
     }
@@ -74,39 +115,39 @@ export default function CreatePlaylistScreen() {
 
   const validateForm = () => {
     if (!cardioZone) {
-      setError('Please select a cardio zone');
+      setError("Please select a cardio zone");
       return false;
     }
 
     if (!duration) {
-      setError('Please enter a duration');
+      setError("Please enter a duration");
       return false;
     }
 
     const numericDuration = parseInt(duration, 10);
     if (isNaN(numericDuration) || numericDuration <= 0) {
-      setError('Please enter a valid positive duration');
+      setError("Please enter a valid positive duration");
       return false;
     }
 
     if (numericDuration > 180) {
-      setError('Maximum duration is 180 minutes');
+      setError("Maximum duration is 180 minutes");
       return false;
     }
 
-    setError('');
+    setError("");
     return true;
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <ScrollView 
-        contentContainerStyle={styles.scrollContainer} 
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.container}>
-          <TouchableOpacity 
-            onPress={() => navigation.goBack()} 
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
             <Text style={styles.backButtonText}>← Back</Text>
@@ -123,9 +164,21 @@ export default function CreatePlaylistScreen() {
               dropdownIconColor="#FFFFFF"
             >
               <Picker.Item label="Choose a zone" value="" color="#FFFFFF" />
-              <Picker.Item label="Zone 1 (60-100 BPM)" value="zone1" color="#FFFFFF" />
-              <Picker.Item label="Zone 2 (100-130 BPM)" value="zone2" color="#FFFFFF" />
-              <Picker.Item label="Zone 3 (130-180 BPM)" value="zone3" color="#FFFFFF" />
+              <Picker.Item
+                label="Zone 1 (60-100 BPM)"
+                value="zone1"
+                color="#FFFFFF"
+              />
+              <Picker.Item
+                label="Zone 2 (100-130 BPM)"
+                value="zone2"
+                color="#FFFFFF"
+              />
+              <Picker.Item
+                label="Zone 3 (130-180 BPM)"
+                value="zone3"
+                color="#FFFFFF"
+              />
             </Picker>
           </View>
 
@@ -143,11 +196,11 @@ export default function CreatePlaylistScreen() {
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-          <TouchableOpacity 
-            onPress={handleCreatePlaylist} 
+          <TouchableOpacity
+            onPress={handleCreatePlaylist}
             style={[
               styles.createButton,
-              isLoading && styles.createButtonDisabled
+              isLoading && styles.createButtonDisabled,
             ]}
             disabled={isLoading}
           >
@@ -169,73 +222,73 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: "#121212",
     padding: 20,
   },
   backButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 60,
     left: 20,
     padding: 10,
     zIndex: 1,
   },
   backButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 18,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    textAlign: "center",
     marginTop: 100,
     marginBottom: 30,
   },
   label: {
-    color: '#B3B3B3',
+    color: "#B3B3B3",
     fontSize: 16,
     marginBottom: 8,
   },
   pickerContainer: {
-    backgroundColor: '#282828',
+    backgroundColor: "#282828",
     borderRadius: 8,
     marginBottom: 20,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
   picker: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
   input: {
-    backgroundColor: '#282828',
-    color: '#FFFFFF',
+    backgroundColor: "#282828",
+    color: "#FFFFFF",
     borderRadius: 8,
     padding: 16,
     fontSize: 16,
     marginBottom: 16,
   },
   inputError: {
-    borderColor: 'red',
+    borderColor: "red",
     borderWidth: 1,
   },
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 14,
     marginBottom: 10,
   },
   createButton: {
-    backgroundColor: '#1DB954',
+    backgroundColor: "#1DB954",
     borderRadius: 25,
     padding: 16,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 20,
   },
   createButtonDisabled: {
-    backgroundColor: '#1DB95480',
+    backgroundColor: "#1DB95480",
   },
   createButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: 'bold',
-  }
+    fontWeight: "bold",
+  },
 });

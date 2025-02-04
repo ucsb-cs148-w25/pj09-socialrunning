@@ -43,6 +43,51 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
 ))
 
 
+@app.route('/create_playlist', methods=['POST'])
+def create_playlist():
+    """
+    Creates a playlist in the user's Spotify account and adds tracks to it.
+    Expects:
+    - `access_token` (str): User's Spotify API token.
+    - `playlist_name` (str): Name of the playlist.
+    - `track_uris` (list): List of Spotify track URIs to add.
+    """
+
+    data = request.json
+    access_token = data.get("access_token")
+    playlist_name = data.get("playlist_name")
+    track_uris = data.get("track_uris", [])
+
+    if not access_token or not playlist_name or not track_uris:
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    try:
+        # Initialize a Spotify client with the user’s access token
+        sp_user = spotipy.Spotify(auth=access_token)
+
+        # Get the user's Spotify ID
+        user_data = sp_user.current_user()
+        user_id = user_data.get("id")
+
+        # Create a new playlist
+        playlist = sp_user.user_playlist_create(user=user_id, name=playlist_name, public=True)
+
+        # Get the playlist ID
+        playlist_id = playlist.get("id")
+
+        if not playlist_id:
+            return jsonify({"error": "Failed to create playlist"}), 500
+
+        # Add tracks to the playlist
+        sp_user.playlist_add_items(playlist_id, track_uris)
+
+        return jsonify({"message": "Playlist created successfully", "playlist_id": playlist_id, "playlist_url": playlist.get("external_urls", {}).get("spotify", "")})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
 
 
 def search_track(track_title, track_artist):

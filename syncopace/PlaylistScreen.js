@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,10 +7,10 @@ import {
   FlatList,
   ActivityIndicator,
   Alert,
-} from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { WebView } from 'react-native-webview';
-import { Ionicons } from '@expo/vector-icons';
+} from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { WebView } from "react-native-webview";
+import { Ionicons } from "@expo/vector-icons";
 
 // Component for the embedded Spotify player using WebView
 const SpotifyPlayer = ({ trackId }) => {
@@ -43,17 +43,18 @@ export default function PlaylistScreen() {
 
   // Helper functions to extract playlist info
   const getZoneFromName = (playlistName) => {
+    if (!playlistName || typeof playlistName !== "string") return null; // Ensure it's a valid string
     const zone = playlistName.match(/Zone (\d)/);
     return zone ? zone[1] : null;
   };
 
   const getZoneColor = (zone) => {
     const colors = {
-      '1': '#4CAF50',
-      '2': '#FFC107',
-      '3': '#F44336',
+      1: "#4CAF50",
+      2: "#FFC107",
+      3: "#F44336",
     };
-    return colors[zone] || '#1DB954';
+    return colors[zone] || "#1DB954";
   };
 
   const getTotalDuration = () => {
@@ -65,11 +66,12 @@ export default function PlaylistScreen() {
 
   const formatArtists = (artistsString) => {
     try {
-      const artists = typeof artistsString === 'string'
-        ? JSON.parse(artistsString)
-        : artistsString;
+      const artists =
+        typeof artistsString === "string"
+          ? JSON.parse(artistsString)
+          : artistsString;
       // Return first artist or join multiple if desired
-      return Array.isArray(artists) ? artists.join(', ') : artistsString;
+      return Array.isArray(artists) ? artists.join(", ") : artistsString;
     } catch {
       return artistsString;
     }
@@ -86,7 +88,7 @@ export default function PlaylistScreen() {
   // Forward and backward controls
   const handleNextSong = () => {
     if (currentSongIndex === null || currentSongIndex >= songs.length - 1) {
-      Alert.alert('Info', 'No more songs in the playlist.');
+      Alert.alert("Info", "No more songs in the playlist.");
       return;
     }
     setCurrentSongIndex(currentSongIndex + 1);
@@ -94,7 +96,7 @@ export default function PlaylistScreen() {
 
   const handlePrevSong = () => {
     if (currentSongIndex === null || currentSongIndex === 0) {
-      Alert.alert('Info', 'This is the first song.');
+      Alert.alert("Info", "This is the first song.");
       return;
     }
     setCurrentSongIndex(currentSongIndex - 1);
@@ -130,30 +132,42 @@ export default function PlaylistScreen() {
         </Text>
       </View>
       <View style={styles.songTempoContainer}>
-        <Text style={styles.songTempo}>
-          {Math.round(item.tempo)} BPM
-        </Text>
+        <Text style={styles.songTempo}>{Math.round(item.tempo)} BPM</Text>
       </View>
     </TouchableOpacity>
   );
 
   const renderHeader = () => {
-    const zone = getZoneFromName(playlist.name);
-    const zoneColor = getZoneColor(zone);
+    if (!playlist || !songs) {
+      return (
+        <View style={styles.headerContainer}>
+          <Text style={styles.errorText}>Error: Playlist data is missing.</Text>
+        </View>
+      );
+    }
+
+    const zone = getZoneFromName(playlist.name || ""); // Ensure `playlist.name` exists
+    const zoneColor = getZoneColor(zone) || "#888"; // Fallback color
 
     return (
       <View style={styles.headerContainer}>
-        <View style={[styles.zoneIndicator, { backgroundColor: zoneColor }]}>
-          <Text style={styles.zoneText}>Zone {zone}</Text>
-        </View>
+        {zone ? (
+          <View style={[styles.zoneIndicator, { backgroundColor: zoneColor }]}>
+            <Text style={styles.zoneText}>Zone {zone}</Text>
+          </View>
+        ) : (
+          <Text style={styles.zoneText}>Unknown Zone</Text>
+        )}
+
         <Text style={styles.playlistStats}>
           {songs.length} songs • {getTotalDuration()} minutes
         </Text>
-        {missingSongs.length > 0 && (
+
+        {missingSongs && missingSongs.length > 0 && (
           <View style={styles.warningContainer}>
             <Text style={styles.warningText}>
-              {missingSongs.length} song{missingSongs.length !== 1 ? 's' : ''} couldn't
-              be found on Spotify and were excluded.
+              {missingSongs.length} song{missingSongs.length !== 1 ? "s" : ""}{" "}
+              couldn't be found on Spotify and were excluded.
             </Text>
           </View>
         )}
@@ -163,7 +177,10 @@ export default function PlaylistScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.backButton}
+      >
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
       <Text style={styles.title}>Your Playlist</Text>
@@ -183,13 +200,22 @@ export default function PlaylistScreen() {
         <View style={styles.playerContainer}>
           {/* Forward/Backward Buttons */}
           <View style={styles.controlsContainer}>
-            <TouchableOpacity onPress={handlePrevSong} style={styles.controlButton}>
+            <TouchableOpacity
+              onPress={handlePrevSong}
+              style={styles.controlButton}
+            >
               <Ionicons name="play-back" size={24} color="#FFFFFF" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setCurrentSongIndex(null)} style={styles.controlButton}>
+            <TouchableOpacity
+              onPress={() => setCurrentSongIndex(null)}
+              style={styles.controlButton}
+            >
               <Ionicons name="close-circle" size={24} color="#FFFFFF" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleNextSong} style={styles.controlButton}>
+            <TouchableOpacity
+              onPress={handleNextSong}
+              style={styles.controlButton}
+            >
               <Ionicons name="play-forward" size={24} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
@@ -209,30 +235,30 @@ export default function PlaylistScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: "#121212",
     paddingHorizontal: 20,
   },
   backButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 60,
     left: 20,
     padding: 10,
     zIndex: 1,
   },
   backButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 18,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    textAlign: "center",
     marginTop: 100,
     marginBottom: 20,
   },
   headerContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 30,
   },
   zoneIndicator: {
@@ -242,48 +268,48 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   zoneText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   playlistStats: {
-    color: '#B3B3B3',
+    color: "#B3B3B3",
     fontSize: 14,
     marginBottom: 15,
   },
   warningContainer: {
-    backgroundColor: '#423A3A',
+    backgroundColor: "#423A3A",
     padding: 12,
     borderRadius: 8,
     marginTop: 10,
-    width: '100%',
+    width: "100%",
   },
   warningText: {
-    color: '#FFB4B4',
+    color: "#FFB4B4",
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
   listContainer: {
     paddingBottom: 20,
   },
   songItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#282828',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#282828",
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
   },
   currentSongItem: {
     borderLeftWidth: 4,
-    borderLeftColor: '#1DB954',
+    borderLeftColor: "#1DB954",
   },
   songNumberContainer: {
     width: 30,
-    alignItems: 'center',
+    alignItems: "center",
   },
   songNumber: {
-    color: '#B3B3B3',
+    color: "#B3B3B3",
     fontSize: 14,
   },
   songInfo: {
@@ -291,42 +317,42 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   songTitle: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   currentSongText: {
-    color: '#1DB954',
+    color: "#1DB954",
   },
   songArtist: {
-    color: '#B3B3B3',
+    color: "#B3B3B3",
     fontSize: 14,
     marginTop: 2,
   },
   songTempoContainer: {
-    backgroundColor: '#1DB95420',
+    backgroundColor: "#1DB95420",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
   },
   songTempo: {
-    color: '#1DB954',
+    color: "#1DB954",
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   playerContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     height: 150,
-    backgroundColor: '#282828',
+    backgroundColor: "#282828",
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
   controlsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     marginBottom: 5,
   },
   controlButton: {
@@ -334,12 +360,12 @@ const styles = StyleSheet.create({
   },
   webview: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   loadingContainer: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.7)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

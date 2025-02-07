@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   appTitle: {
-    fontSize: 48,
+    fontSize: 64,
     fontWeight: 'bold',
     color: '#2196F3',
   },

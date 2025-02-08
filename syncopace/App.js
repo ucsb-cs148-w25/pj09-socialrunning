@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { useAuthRequest, ResponseType } from 'expo-auth-session';
@@ -31,7 +31,10 @@ function MainScreen({ navigation }) {
         'playlist-modify-public',
         'playlist-modify-private'
       ],
-      redirectUri: 'exp://exp.host/@rkibel/syncopace',
+      redirectUri: Platform.select({
+        web: 'http://localhost:8081/',
+        default: 'exp://exp.host/@rkibel/syncopace'
+      }),
     },
     {
       authorizationEndpoint: 'https://accounts.spotify.com/authorize',

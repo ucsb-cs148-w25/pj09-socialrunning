@@ -40,7 +40,12 @@
 - Improve the **sign-in experience** and support users without Spotify accounts.  
 - Make it **easier to switch between BPM zones** during a run.  
 
-# Response Actions  
+# Response Actions / Next Steps
+- Get playlist to sync with user's Spotify
+- Filter by genre
+- Playback in-app
+- Track user location geographically
+- Playlist history with favorites
+- Expand number of zones to fit more niche needs
 
-# Next Steps  
 

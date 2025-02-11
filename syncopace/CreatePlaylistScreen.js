@@ -5,9 +5,11 @@ import {
   Alert, ActivityIndicator
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function CreatePlaylistScreen() {
+  const route = useRoute();
+  const accessToken = route.params?.accessToken;
   const navigation = useNavigation();
   const [cardioZone, setCardioZone] = useState('');
   const [duration, setDuration] = useState('');
@@ -20,24 +22,23 @@ export default function CreatePlaylistScreen() {
     setIsLoading(true);
     setError('');
 
-    // Map zones to backend expected values
     const zoneMapping = {
-      'zone1': 1,
-      'zone2': 2,
-      'zone3': 3
+      zone1: 1,
+      zone2: 2,
+      zone3: 3,
     };
 
     try {
-      // Use your actual backend URL here
-      const backendUrl = 'http://169.231.215.167:5001/get_songs';
+      const backendUrl = "http://169.231.218.138:5001/get_songs";
 
+      // Fetch songs based on the selected cardio zone and duration
       const response = await fetch(
         `${backendUrl}?zone=${zoneMapping[cardioZone]}&duration=${duration}`,
         {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
         }
       );
@@ -52,13 +53,46 @@ export default function CreatePlaylistScreen() {
         throw new Error('Invalid response format from server');
       }
 
-      // Navigate to playlist screen with the received data
-      navigation.navigate('PlaylistScreen', {
-        playlist: data.virtual_playlist,
-        songs: data.songs,
-        missingSongs: data.missing_songs
+      const trackUris = data.virtual_playlist.tracks; // Spotify URIs
+      if (trackUris.length === 0) {
+        throw new Error("No valid songs found.");
+      }
+
+      // Now create the playlist in the user's Spotify account
+      const createPlaylistUrl = "http://169.231.218.138:5001/create_playlist";
+
+      const createPlaylistResponse = await fetch(createPlaylistUrl, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          access_token: accessToken, // Ensure this is being passed from App.js
+          playlist_name: `Syncopace Zone ${zoneMapping[cardioZone]} Playlist`,
+          track_uris: trackUris,
+        }),
       });
 
+      if (!createPlaylistResponse.ok) {
+        throw new Error(`Failed to create playlist in Spotify`);
+      }
+
+      const playlistData = await createPlaylistResponse.json();
+
+      Alert.alert(
+        "Playlist Created",
+        `Your playlist has been added to your Spotify!`,
+        [{ text: "OK" }]
+      );
+
+      // Navigate to the PlaylistScreen
+      navigation.navigate("PlaylistScreen", {
+        playlist: playlistData,
+        zone: zoneMapping[cardioZone],
+        songs: data.songs,
+        missingSongs: data.missing_songs,
+      });
     } catch (err) {
       console.error('Error creating playlist:', err);
       Alert.alert(

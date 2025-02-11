@@ -29,7 +29,7 @@ function MainScreen({ navigation }) {
         'user-read-private',
         'playlist-read-private',
         'playlist-modify-public',
-        'playlist-modify-private'
+        'playlist-modify-private',
       ],
       redirectUri: 'exp://exp.host/@rkibel/syncopace',
     },
@@ -95,7 +95,7 @@ function MainScreen({ navigation }) {
           <Text style={styles.lightText}>You're successfully logged in</Text>
           <TouchableOpacity
             style={styles.createPlaylistButton}
-            onPress={() => navigation.navigate('CreatePlaylist')}
+            onPress={() => navigation.navigate('CreatePlaylist', {accessToken})}
           >
             <Text style={styles.buttonText}>Create Playlist</Text>
           </TouchableOpacity>
@@ -155,7 +155,7 @@ export default function App() {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          cardStyle: { backgroundColor: '#121212' }
+          cardStyle: { backgroundColor: '#121212' },
         }}
       >
         <Stack.Screen name="Main" component={MainScreen} />

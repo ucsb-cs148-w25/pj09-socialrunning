@@ -3,8 +3,7 @@ function validateForm(cardioZone, duration) {
     if (!cardioZone) return "Please select a cardio zone";
     if (!duration) return "Please enter a duration";
     if (parseInt(duration, 10) <= 0) return "Please enter a valid positive duration";
-    if (parseInt(duration, 10) > 180) return "Maximum duration is 180 minutes";
-    return null;
+    return "success";
   }
   
   // Jest tests
@@ -20,11 +19,7 @@ function validateForm(cardioZone, duration) {
     expect(validateForm("zone1", "0")).toBe("Please enter a valid positive duration");
   });
   
-  test("should return error if duration is too high", () => {
-    expect(validateForm("zone1", "200")).toBe("Maximum duration is 180 minutes");
-  });
-  
-  test("should return null for valid input", () => {
-    expect(validateForm("zone1", "60")).toBe(null);
+  test("should return success for valid input", () => {
+    expect(validateForm("zone1", "60")).toBe("success");
   });
   

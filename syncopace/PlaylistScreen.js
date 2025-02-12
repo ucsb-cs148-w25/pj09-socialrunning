@@ -37,15 +37,9 @@ const SpotifyPlayer = ({ trackId }) => {
 export default function PlaylistScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { playlist, songs, missingSongs } = route.params;
+  const { playlist, zone, songs, missingSongs } = route.params;
   const [currentSongIndex, setCurrentSongIndex] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Helper functions to extract playlist info
-  const getZoneFromName = (playlistName) => {
-    const zone = playlistName.match(/Zone (\d)/);
-    return zone ? zone[1] : null;
-  };
 
   const getZoneColor = (zone) => {
     const colors = {
@@ -66,8 +60,8 @@ export default function PlaylistScreen() {
   const formatArtists = (artistsString) => {
     try {
       const artists = typeof artistsString === 'string'
-        ? JSON.parse(artistsString)
-        : artistsString;
+          ? JSON.parse(artistsString)
+          : artistsString;
       // Return first artist or join multiple if desired
       return Array.isArray(artists) ? artists.join(', ') : artistsString;
     } catch {
@@ -130,7 +124,7 @@ export default function PlaylistScreen() {
         </Text>
       </View>
       <View style={styles.songTempoContainer}>
-        <Text style={styles.songTempo}>
+      <Text style={styles.songTempo}>
           {Math.round(item.tempo)} BPM
         </Text>
       </View>
@@ -138,22 +132,34 @@ export default function PlaylistScreen() {
   );
 
   const renderHeader = () => {
-    const zone = getZoneFromName(playlist.name);
-    const zoneColor = getZoneColor(zone);
+    if (!playlist || !songs) {
+      return (
+        <View style={styles.headerContainer}>
+          <Text style={styles.errorText}>Error: Playlist data is missing.</Text>
+        </View>
+      );
+    }
+
+    const zoneColor = getZoneColor(zone) || "#888"; // Fallback color
 
     return (
       <View style={styles.headerContainer}>
-        <View style={[styles.zoneIndicator, { backgroundColor: zoneColor }]}>
-          <Text style={styles.zoneText}>Zone {zone}</Text>
-        </View>
+        {zone ? (
+          <View style={[styles.zoneIndicator, { backgroundColor: zoneColor }]}>
+            <Text style={styles.zoneText}>Zone {zone}</Text>
+          </View>
+        ) : (
+          <Text style={styles.zoneText}>Zone {zone} Playlist</Text>
+        )}
+
         <Text style={styles.playlistStats}>
           {songs.length} songs • {getTotalDuration()} minutes
         </Text>
-        {missingSongs.length > 0 && (
+
+        {missingSongs && missingSongs.length > 0 && (
           <View style={styles.warningContainer}>
             <Text style={styles.warningText}>
-              {missingSongs.length} song{missingSongs.length !== 1 ? 's' : ''} couldn't
-              be found on Spotify and were excluded.
+              {missingSongs.length} song{missingSongs.length !== 1 ? 's' : ''}{' '} couldn't be found on Spotify and were excluded.
             </Text>
           </View>
         )}
@@ -183,13 +189,22 @@ export default function PlaylistScreen() {
         <View style={styles.playerContainer}>
           {/* Forward/Backward Buttons */}
           <View style={styles.controlsContainer}>
-            <TouchableOpacity onPress={handlePrevSong} style={styles.controlButton}>
+            <TouchableOpacity
+              onPress={handlePrevSong}
+              style={styles.controlButton}
+            >
               <Ionicons name="play-back" size={24} color="#FFFFFF" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setCurrentSongIndex(null)} style={styles.controlButton}>
+            <TouchableOpacity
+              onPress={() => setCurrentSongIndex(null)}
+              style={styles.controlButton}
+            >
               <Ionicons name="close-circle" size={24} color="#FFFFFF" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleNextSong} style={styles.controlButton}>
+            <TouchableOpacity
+              onPress={handleNextSong}
+              style={styles.controlButton}
+            >
               <Ionicons name="play-forward" size={24} color="#FFFFFF" />
             </TouchableOpacity>
           </View>

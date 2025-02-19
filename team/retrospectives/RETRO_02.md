@@ -6,9 +6,9 @@
 
 ## Action item 1
 
-* Goal: 
-* Change/experiment: 
-* Measurement: 
+* Goal: Push more code regarding the spotify functionality and getting better playlists. Also, we need to fix the sign in page for non-spotify users. 
+* Change/experiment: Let us all try to make at least 1 PR a week. 
+* Measurement: We can see if we have at least 1 PR a week.
 
 ## Action item 2
 

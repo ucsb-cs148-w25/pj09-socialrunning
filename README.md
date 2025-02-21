@@ -141,4 +141,29 @@
 | Runner  | Create and customize playlists, sync music with pace, control playback, and track progress. |
 | Admin   | Moderate content, manage user accounts, debug API integrations, and oversee app operations. |
 
+
 By clearly defining roles, we aim to provide a seamless and focused experience for runners while ensuring app quality and security through admin oversight.
+
+
+
+
+
+## Backend Setup (Python)
+
+1. **Create a Virtual Environment, install dependencies, and start running backend**  
+   Run the following command to create a virtual environment named `venv`:
+   ```bash
+   - python3 -m venv venv
+   - source venv/bin/activate
+   - pip install -r requirements.txt
+   - python3 app.py
+
+## Frontend Setup (Javacript) 
+- instantiate a new terminal
+- npm install
+- run "npx expo start --tunnel" or just "npx expo start"
+
+
+
+
+

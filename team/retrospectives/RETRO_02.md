@@ -25,5 +25,5 @@
 ## Experiment/Change 
 
 * Our experiment entails two things: we will introduce a BUG category for issues to separate them from new features and will be more descriptive with our issue labeling. In general, we want our tasks to be well-defined and our Kanban board to be more populated.
-* Results?
-* Keep the change?
+* Results: over the last week since the retro started, a few issues have been added with BUG in the title. However, these issues have not been resolved; they have only been marked. This conclusion is being written two days before the peer-review stage, so we suspect that these will be resolved incredibly soon---in general, we would consider this experiment a semi-success, since a good amount of BUG issues have been added, and the descriptions are quite helpful. The board is populating more, but at the moment the team is stagnating in terms of the issues added, so it does not make sense to call the experiment a full success.
+* We will keep the change because we introduced a new convention that makes issue labeling easier. This has shown marginal improvement, but because the change requested is not substantial it is worth the extra effort.

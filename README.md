@@ -39,7 +39,7 @@
 
 ---
 
-### **3. Song Selection **
+### **3. Song Selection**
 - **Features:**
   - Fetch songs using the Spotify API based on:
     - **Cardio Zone:** Match BPM ranges for each zone (e.g., Zone 3 = 120-140 BPM).
@@ -51,8 +51,6 @@
   - Display the generated playlist with:
     - Song titles, artist names, album artwork, and durations.
     - Total runtime.
-- **UI:**
-  - Clean playlist screen with album artwork and a timer tracking progress through the run.
 
 ---
 ## Nice-to-Have Features (Post-MVP)

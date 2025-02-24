@@ -158,6 +158,9 @@ By clearly defining roles, we aim to provide a seamless and focused experience f
    - pip install -r requirements.txt
    - python3 app.py
 
+   Download from this kaggle dataset to your local computer: https://www.kaggle.com/datasets/priyamchoksi/spotify-dataset-114k-songs 
+   In the backend folder add take this downloaded file and and change the name to "track_features.csv"
+
 ## Frontend Setup (Javacript) 
 - instantiate a new terminal
 - npm install

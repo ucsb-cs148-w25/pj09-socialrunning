@@ -1,6 +1,6 @@
 # Project 9: Social Running App
 
-### This is a social running app (mobile) that syncs your run pace with custom, shareable music playlists, using your ideal cardio zone (1-5) and desired running length to suggest songs that keep you motivated and within your desire range throughout your run!
+### This is a social running app (mobile) that syncs your run pace with custom, shareable music playlists, using your ideal cardio zone and desired running length to suggest songs that keep you motivated and within your desire range throughout your run!
 
 ## Tech Stack
 - **Frontend**: React Native (mobile app)
@@ -20,7 +20,7 @@
 
 ## MVP Features
 
-### **1. Onboarding/Authentication**
+### **1. Authentication**
 - **Features:**
   - User signup/login using Firebase Authentication.
   - Option to link Spotify account using OAuth via the Spotify API for song access.
@@ -32,24 +32,18 @@
 ### **2. Main Setup Screen (Workout Preferences)**
 - **Features:**
   - Allow the user to select:
-    - **Cardio Zone** (e.g., Zone 2, Zone 3, Zone 4, Zone 5).
-    - **Genre** (e.g., Pop, EDM, Mixed/Miscellaneous Genre).
-    - **Duration** (e.g., 20 mins, 30 mins, etc.).
+    - **Cardio Zone** 
+    - **Duration**
 - **UI:**
   - Simple form or dropdowns/sliders with predefined options for zones, genres, and durations.
 
 ---
 
-### **3. Song Recommendation Algorithm**
+### **3. Song Selection **
 - **Features:**
   - Fetch songs using the Spotify API based on:
     - **Cardio Zone:** Match BPM ranges for each zone (e.g., Zone 3 = 120-140 BPM).
-    - **Genre:** Use Spotify’s genre filters to refine results.
     - **Duration:** Select songs to fit within the chosen timeframe.
-  - Shuffle or create a playlist to avoid repetition.
-- **Backend Integration:**
-  - Use Firebase Functions or Firestore to handle Spotify queries and cache user preferences/playlists.
-
 ---
 
 ### **4. Playlist Display and Playback**
@@ -57,8 +51,6 @@
   - Display the generated playlist with:
     - Song titles, artist names, album artwork, and durations.
     - Total runtime.
-  - Provide a “Start Running” button to play songs directly via Spotify.
-  - Control playback with Spotify APIs (play/pause/skip).
 - **UI:**
   - Clean playlist screen with album artwork and a timer tracking progress through the run.
 

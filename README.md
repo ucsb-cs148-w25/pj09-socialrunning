@@ -2,6 +2,26 @@
 
 ### This is a social running app (mobile) that syncs your run pace with custom, shareable music playlists, using your ideal cardio zone and desired running length to suggest songs that keep you motivated and within your desire range throughout your run!
 
+## Instructions for setup:
+## Backend Setup (Python)
+
+1. **Create a Virtual Environment, install dependencies, and start running backend**  
+   Run the following command to create a virtual environment named `venv`:
+   ```bash
+   - python3 -m venv venv
+   - source venv/bin/activate
+   - pip install -r requirements.txt
+   - python3 app.py
+
+   Download from this kaggle dataset to your local computer: https://www.kaggle.com/datasets/priyamchoksi/spotify-dataset-114k-songs 
+   In the backend folder add take this downloaded file and and change the name to "track_features.csv"
+
+## Frontend Setup (Javacript) 
+- instantiate a new terminal
+- npm install
+- run "npx expo start --tunnel" or just "npx expo start"
+
+
 ## Tech Stack
 - **Frontend**: React Native (mobile app)
 - **Backend**: Firebase (Firestore, Functions, and Authentication)
@@ -133,28 +153,6 @@
 
 
 By clearly defining roles, we aim to provide a seamless and focused experience for runners while ensuring app quality and security through admin oversight.
-
-
-
-
-
-## Backend Setup (Python)
-
-1. **Create a Virtual Environment, install dependencies, and start running backend**  
-   Run the following command to create a virtual environment named `venv`:
-   ```bash
-   - python3 -m venv venv
-   - source venv/bin/activate
-   - pip install -r requirements.txt
-   - python3 app.py
-
-   Download from this kaggle dataset to your local computer: https://www.kaggle.com/datasets/priyamchoksi/spotify-dataset-114k-songs 
-   In the backend folder add take this downloaded file and and change the name to "track_features.csv"
-
-## Frontend Setup (Javacript) 
-- instantiate a new terminal
-- npm install
-- run "npx expo start --tunnel" or just "npx expo start"
 
 
 

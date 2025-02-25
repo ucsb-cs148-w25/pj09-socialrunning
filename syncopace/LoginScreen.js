@@ -8,7 +8,8 @@ import { useAuthRequest, ResponseType } from 'expo-auth-session';
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function LoginScreen({ onBack, onLoginSuccess }) {
+export default function LoginScreen({ navigation, route }) {
+  const { onLoginSuccess } = route.params || {};
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -46,12 +47,14 @@ export default function LoginScreen({ onBack, onLoginSuccess }) {
         });
 
         const userData = await userResponse.json();
-        onLoginSuccess({
-          display_name: userData.display_name,
-          email: userData.email,
-          uid: userData.id,
-          spotify_token: access_token
-        });
+        if (onLoginSuccess) {
+          onLoginSuccess({
+            display_name: userData.display_name,
+            email: userData.email,
+            uid: userData.id,
+            spotify_token: access_token
+          });
+        }
         navigation.navigate('Main', { userData: userData });
       }
     } catch (err) {
@@ -76,7 +79,7 @@ export default function LoginScreen({ onBack, onLoginSuccess }) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onBack} style={styles.backButton}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
 

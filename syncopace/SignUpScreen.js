@@ -8,7 +8,7 @@ import { useAuthRequest, ResponseType } from 'expo-auth-session';
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function SignUpScreen({ onSwitchToLogin, onBack }) {
+export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -70,7 +70,7 @@ export default function SignUpScreen({ onSwitchToLogin, onBack }) {
   return (
     <View style={styles.container}>
       {/* Back Button */}
-      <TouchableOpacity onPress={onBack} style={styles.backButton}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
 
@@ -118,7 +118,7 @@ export default function SignUpScreen({ onSwitchToLogin, onBack }) {
           <Text style={styles.spotifyButtonText}>SIGN UP WITH SPOTIFY</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={onSwitchToLogin} style={styles.loginRedirectButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.loginRedirectButton}>
           <Text style={styles.loginRedirectText}>Already have an account? Log In</Text>
         </TouchableOpacity>
       </View>
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   signUpButton: {
-    backgroundColor: '#1DB954', // Spotify's green color
+    backgroundColor: '#2196F3', // Changed from '#1DB954' to blue
     borderRadius: 25,
     padding: 16,
     alignItems: 'center',

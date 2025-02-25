@@ -14,11 +14,26 @@ import PlaylistScreen from './PlaylistScreen';
 WebBrowser.maybeCompleteAuthSession();
 const Stack = createStackNavigator();
 
-function MainScreen({ navigation }) {
-  const [userInfo, setUserInfo] = useState(null);
+function MainScreen({ navigation, route }) {
+  const { userInfo, setUserInfo } = route.params;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
+
+  // Move handleLoginSuccess here where it has access to navigation
+  const handleLoginSuccess = (userData) => {
+    setUserInfo(userData);
+    navigation.navigate('Main');
+  };
+
+  useEffect(() => {
+    if (navigation) {
+      // Pass handleLoginSuccess to the Login screen when needed
+      navigation.setParams({
+        onLoginSuccess: handleLoginSuccess
+      });
+    }
+  }, [navigation]);
 
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -95,7 +110,7 @@ function MainScreen({ navigation }) {
           <Text style={styles.lightText}>You're successfully logged in</Text>
           <TouchableOpacity
             style={styles.createPlaylistButton}
-            onPress={() => navigation.navigate('CreatePlaylist', {accessToken})}
+            onPress={() => navigation.navigate('CreatePlaylist', { accessToken })}
           >
             <Text style={styles.buttonText}>Create Playlist</Text>
           </TouchableOpacity>
@@ -150,6 +165,8 @@ function MainScreen({ navigation }) {
 }
 
 export default function App() {
+  const [userInfo, setUserInfo] = useState(null);
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -158,9 +175,16 @@ export default function App() {
           cardStyle: { backgroundColor: '#121212' },
         }}
       >
-        <Stack.Screen name="Main" component={MainScreen} />
+        <Stack.Screen
+          name="Main"
+          component={MainScreen}
+          initialParams={{ userInfo, setUserInfo }}
+        />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen 
+          name="Login" 
+          component={LoginScreen}
+        />
         <Stack.Screen name="CreatePlaylist" component={CreatePlaylistScreen} />
         <Stack.Screen name="PlaylistScreen" component={PlaylistScreen} />
       </Stack.Navigator>

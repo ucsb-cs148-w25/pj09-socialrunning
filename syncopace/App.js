@@ -20,7 +20,18 @@ function MainScreen({ navigation, route }) {
   const [error, setError] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
 
-  // Move handleLoginSuccess here where it has access to navigation
+  const handleSignOut = () => {
+    console.log('Signing out...');
+    route.params.setUserInfo(null);  // Update the parent state first
+    setAccessToken(null);            // Clear local token
+    setUserInfo(null);              // Clear local state
+
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Main' }],
+    });
+  };
+
   const handleLoginSuccess = (userData) => {
     setUserInfo(userData);
     navigation.navigate('Main');
@@ -28,7 +39,6 @@ function MainScreen({ navigation, route }) {
 
   useEffect(() => {
     if (navigation) {
-      // Pass handleLoginSuccess to the Login screen when needed
       navigation.setParams({
         onLoginSuccess: handleLoginSuccess
       });
@@ -66,6 +76,7 @@ function MainScreen({ navigation, route }) {
       setError(null);
       try {
         const { access_token } = response.params;
+        console.log('Spotify access token:', access_token);
         setAccessToken(access_token);
 
         const userResponse = await fetch('https://api.spotify.com/v1/me', {
@@ -74,13 +85,26 @@ function MainScreen({ navigation, route }) {
           },
         });
         const userData = await userResponse.json();
-        setUserInfo(userData);
+        console.log('Spotify login successful! User data:', JSON.stringify(userData, null, 2));
+
+        // Update both the userInfo state and the navigation state
+        const formattedUserData = {
+          display_name: userData.display_name,
+          email: userData.email,
+          uid: userData.id,
+          spotify_token: access_token
+        };
+        setUserInfo(formattedUserData);
+        navigation.setParams({ userInfo: formattedUserData });
+
       } catch (e) {
+        console.error('Spotify login error:', e);
         setError('Failed to get user information');
-        console.error(e);
       } finally {
         setLoading(false);
       }
+    } else {
+      console.log('Spotify login response:', response);
     }
   };
 
@@ -115,7 +139,7 @@ function MainScreen({ navigation, route }) {
             <Text style={styles.buttonText}>Create Playlist</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => setUserInfo(null)}
+            onPress={handleSignOut}
             style={styles.signOutButton}
           >
             <Text style={styles.buttonText}>Sign Out</Text>
@@ -178,11 +202,17 @@ export default function App() {
         <Stack.Screen
           name="Main"
           component={MainScreen}
-          initialParams={{ userInfo, setUserInfo }}
+          initialParams={{
+            userInfo,
+            setUserInfo: (newUserInfo) => {
+              console.log('Setting user info to:', newUserInfo);
+              setUserInfo(newUserInfo);
+            }
+          }}
         />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen 
-          name="Login" 
+        <Stack.Screen
+          name="Login"
           component={LoginScreen}
         />
         <Stack.Screen name="CreatePlaylist" component={CreatePlaylistScreen} />

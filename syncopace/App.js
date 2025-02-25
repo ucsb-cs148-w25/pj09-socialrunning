@@ -1,8 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
-import { useEffect, useState } from 'react';
-import { useAuthRequest, ResponseType } from 'expo-auth-session';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -11,120 +9,22 @@ import LoginScreen from './LoginScreen';
 import CreatePlaylistScreen from './CreatePlaylistScreen';
 import PlaylistScreen from './PlaylistScreen';
 
-WebBrowser.maybeCompleteAuthSession();
 const Stack = createStackNavigator();
 
 function MainScreen({ navigation, route }) {
   const { userInfo, setUserInfo } = route.params;
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
 
   const handleSignOut = () => {
     console.log('Signing out...');
-    route.params.setUserInfo(null);  // Update the parent state first
-    setAccessToken(null);            // Clear local token
-    setUserInfo(null);              // Clear local state
+    route.params.setUserInfo(null);
+    setAccessToken(null);
 
     navigation.reset({
       index: 0,
       routes: [{ name: 'Main' }],
     });
   };
-
-  const handleLoginSuccess = (userData) => {
-    setUserInfo(userData);
-    navigation.navigate('Main');
-  };
-
-  useEffect(() => {
-    if (navigation) {
-      navigation.setParams({
-        onLoginSuccess: handleLoginSuccess
-      });
-    }
-  }, [navigation]);
-
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      responseType: ResponseType.Token,
-      clientId: '15583efa68154211a31ca3a901d13c71',
-      scopes: [
-        'user-read-email',
-        'user-read-private',
-        'playlist-read-private',
-        'playlist-modify-public',
-        'playlist-modify-private',
-      ],
-      redirectUri: 'exp://exp.host/@rkibel/syncopace',
-    },
-    {
-      authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-      tokenEndpoint: 'https://accounts.spotify.com/api/token',
-    }
-  );
-
-  useEffect(() => {
-    if (response?.type === 'success') {
-      handleSignInResponse();
-    }
-  }, [response]);
-
-  const handleSignInResponse = async () => {
-    if (response?.type === 'success') {
-      setLoading(true);
-      setError(null);
-      try {
-        const { access_token } = response.params;
-        console.log('Spotify access token:', access_token);
-        setAccessToken(access_token);
-
-        const userResponse = await fetch('https://api.spotify.com/v1/me', {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
-        });
-        const userData = await userResponse.json();
-        console.log('Spotify login successful! User data:', JSON.stringify(userData, null, 2));
-
-        // Update both the userInfo state and the navigation state
-        const formattedUserData = {
-          display_name: userData.display_name,
-          email: userData.email,
-          uid: userData.id,
-          spotify_token: access_token
-        };
-        setUserInfo(formattedUserData);
-        navigation.setParams({ userInfo: formattedUserData });
-
-      } catch (e) {
-        console.error('Spotify login error:', e);
-        setError('Failed to get user information');
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      console.log('Spotify login response:', response);
-    }
-  };
-
-  const handleSpotifyLogin = async () => {
-    setError(null);
-    try {
-      await promptAsync();
-    } catch (e) {
-      setError('Failed to start sign in');
-      console.error(e);
-    }
-  };
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#1DB954" />
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -134,7 +34,7 @@ function MainScreen({ navigation, route }) {
           <Text style={styles.lightText}>You're successfully logged in</Text>
           <TouchableOpacity
             style={styles.createPlaylistButton}
-            onPress={() => navigation.navigate('CreatePlaylist', { accessToken })}
+            onPress={() => navigation.navigate('CreatePlaylist', { accessToken: userInfo.spotify_token })}
           >
             <Text style={styles.buttonText}>Create Playlist</Text>
           </TouchableOpacity>
@@ -156,13 +56,6 @@ function MainScreen({ navigation, route }) {
           </Text>
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.spotifyButton}
-              onPress={handleSpotifyLogin}
-            >
-              <Text style={styles.buttonText}>LOGIN WITH SPOTIFY</Text>
-            </TouchableOpacity>
-
             <TouchableOpacity
               style={styles.signUpButton}
               onPress={() => navigation.navigate('SignUp')}

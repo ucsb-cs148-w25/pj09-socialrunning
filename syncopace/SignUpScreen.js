@@ -80,9 +80,10 @@ export default function SignUpScreen({ navigation, route }) {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       console.log('User created successfully!');
-      // Automatically navigate to the login screen after successful sign up
-      if (onSwitchToLogin) onSwitchToLogin();
+      // Navigate to login screen after successful sign up
+      navigation.navigate('Login');
     } catch (e) {
+      console.error('Sign up error:', e);
       setError(e.message);
     }
   };

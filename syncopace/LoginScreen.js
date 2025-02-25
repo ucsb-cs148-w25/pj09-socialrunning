@@ -81,12 +81,28 @@ export default function LoginScreen({ navigation, route }) {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      onLoginSuccess({
+
+      const formattedUserData = {
         display_name: user.email,
         email: user.email,
         uid: user.uid
+      };
+
+      // First update the parent state through onLoginSuccess
+      if (route.params?.onLoginSuccess) {
+        route.params.onLoginSuccess(formattedUserData);
+      }
+
+      // Then reset navigation to Main screen with user data
+      navigation.reset({
+        index: 0,
+        routes: [{
+          name: 'Main',
+          params: { userInfo: formattedUserData }
+        }],
       });
     } catch (e) {
+      console.error('Email login error:', e);
       setError(e.message);
     }
   };

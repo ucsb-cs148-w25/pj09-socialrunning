@@ -38,8 +38,8 @@ export default function LoginScreen({ navigation, route }) {
       const response = await promptAsync();
       if (response?.type === 'success') {
         const { access_token } = response.params;
+        console.log('Spotify access token:', access_token);
 
-        // Fetch user info from Spotify
         const userResponse = await fetch('https://api.spotify.com/v1/me', {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -47,17 +47,31 @@ export default function LoginScreen({ navigation, route }) {
         });
 
         const userData = await userResponse.json();
-        if (onLoginSuccess) {
-          onLoginSuccess({
-            display_name: userData.display_name,
-            email: userData.email,
-            uid: userData.id,
-            spotify_token: access_token
-          });
+        console.log('Spotify login successful! User data:', JSON.stringify(userData, null, 2));
+
+        const formattedUserData = {
+          display_name: userData.display_name,
+          email: userData.email,
+          uid: userData.id,
+          spotify_token: access_token
+        };
+
+        // First update the parent state through onLoginSuccess
+        if (route.params?.onLoginSuccess) {
+          route.params.onLoginSuccess(formattedUserData);
         }
-        navigation.navigate('Main', { userData: userData });
+
+        // Then reset navigation to Main screen
+        navigation.reset({
+          index: 0,
+          routes: [{
+            name: 'Main',
+            params: { userInfo: formattedUserData }
+          }],
+        });
       }
     } catch (err) {
+      console.error('Spotify login error:', err);
       setError('Failed to login with Spotify');
     }
   };

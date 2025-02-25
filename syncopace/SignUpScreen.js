@@ -8,7 +8,7 @@ import { useAuthRequest, ResponseType } from 'expo-auth-session';
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function SignUpScreen({ navigation }) {
+export default function SignUpScreen({ navigation, route }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -37,8 +37,8 @@ export default function SignUpScreen({ navigation }) {
       const response = await promptAsync();
       if (response?.type === 'success') {
         const { access_token } = response.params;
+        console.log('Spotify access token:', access_token);
 
-        // Fetch user info from Spotify
         const userResponse = await fetch('https://api.spotify.com/v1/me', {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -46,11 +46,31 @@ export default function SignUpScreen({ navigation }) {
         });
 
         const userData = await userResponse.json();
-        // Handle Spotify user data as needed
-        console.log('Spotify User Data:', userData);
-        // You might want to link Spotify account with your Firebase user here
+        console.log('Spotify signup successful! User data:', JSON.stringify(userData, null, 2));
+
+        const formattedUserData = {
+          display_name: userData.display_name,
+          email: userData.email,
+          uid: userData.id,
+          spotify_token: access_token
+        };
+
+        // Update parent state and navigate
+        if (route.params?.onLoginSuccess) {
+          route.params.onLoginSuccess(formattedUserData);
+        }
+
+        // Reset navigation to Main screen with user data
+        navigation.reset({
+          index: 0,
+          routes: [{
+            name: 'Main',
+            params: { userInfo: formattedUserData }
+          }],
+        });
       }
     } catch (err) {
+      console.error('Spotify signup error:', err);
       setError('Failed to sign up with Spotify');
     }
   };

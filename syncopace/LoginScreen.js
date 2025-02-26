@@ -47,7 +47,6 @@ export default function LoginScreen({ navigation, route }) {
         });
 
         const userData = await userResponse.json();
-        console.log('Spotify login successful! User data:', JSON.stringify(userData, null, 2));
 
         const formattedUserData = {
           display_name: userData.display_name,

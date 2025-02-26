@@ -16,7 +16,6 @@ function MainScreen({ navigation, route }) {
   const [accessToken, setAccessToken] = useState(null);
 
   const handleSignOut = () => {
-    console.log('Signing out...');
     route.params.setUserInfo(null);
     setAccessToken(null);
 
@@ -98,7 +97,6 @@ export default function App() {
           initialParams={{
             userInfo,
             setUserInfo: (newUserInfo) => {
-              console.log('Setting user info to:', newUserInfo);
               setUserInfo(newUserInfo);
             }
           }}

@@ -29,7 +29,7 @@ export default function CreatePlaylistScreen() {
     };
 
     try {
-      const backendUrl = "http://169.231.218.138:5001/get_songs";
+      const backendUrl = "http://169.231.212.83:5001/get_songs";
 
       // Fetch songs based on the selected cardio zone and duration
       const response = await fetch(
@@ -59,7 +59,7 @@ export default function CreatePlaylistScreen() {
       }
 
       // Now create the playlist in the user's Spotify account
-      const createPlaylistUrl = "http://169.231.218.138:5001/create_playlist";
+      const createPlaylistUrl = "http://169.231.212.83:5001/create_playlist";
 
       const createPlaylistResponse = await fetch(createPlaylistUrl, {
         method: "POST",

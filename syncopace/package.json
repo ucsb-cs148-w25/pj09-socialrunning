@@ -30,7 +30,9 @@
     "react-native-screens": "^4.6.0",
     "react-native-track-player": "^4.1.1",
     "react-native-web": "~0.19.13",
-    "react-native-webview": "^13.13.2"
+    "react-native-webview": "^13.13.2",
+    "expo-constants": "~17.0.7",
+    "expo-linking": "~7.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

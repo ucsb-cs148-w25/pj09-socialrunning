@@ -8,7 +8,8 @@ import { useAuthRequest, ResponseType } from 'expo-auth-session';
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function LoginScreen({ onBack, onLoginSuccess }) {
+export default function LoginScreen({ navigation, route }) {
+  const { onLoginSuccess } = route.params || {};
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -37,8 +38,8 @@ export default function LoginScreen({ onBack, onLoginSuccess }) {
       const response = await promptAsync();
       if (response?.type === 'success') {
         const { access_token } = response.params;
+        console.log('Spotify access token:', access_token);
 
-        // Fetch user info from Spotify
         const userResponse = await fetch('https://api.spotify.com/v1/me', {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -46,15 +47,30 @@ export default function LoginScreen({ onBack, onLoginSuccess }) {
         });
 
         const userData = await userResponse.json();
-        onLoginSuccess({
+
+        const formattedUserData = {
           display_name: userData.display_name,
           email: userData.email,
           uid: userData.id,
           spotify_token: access_token
+        };
+
+        // First update the parent state through onLoginSuccess
+        if (route.params?.onLoginSuccess) {
+          route.params.onLoginSuccess(formattedUserData);
+        }
+
+        // Then reset navigation to Main screen
+        navigation.reset({
+          index: 0,
+          routes: [{
+            name: 'Main',
+            params: { userInfo: formattedUserData }
+          }],
         });
-        navigation.navigate('Main', { userData: userData });
       }
     } catch (err) {
+      console.error('Spotify login error:', err);
       setError('Failed to login with Spotify');
     }
   };
@@ -64,19 +80,35 @@ export default function LoginScreen({ onBack, onLoginSuccess }) {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      onLoginSuccess({
+
+      const formattedUserData = {
         display_name: user.email,
         email: user.email,
         uid: user.uid
+      };
+
+      // First update the parent state through onLoginSuccess
+      if (route.params?.onLoginSuccess) {
+        route.params.onLoginSuccess(formattedUserData);
+      }
+
+      // Then reset navigation to Main screen with user data
+      navigation.reset({
+        index: 0,
+        routes: [{
+          name: 'Main',
+          params: { userInfo: formattedUserData }
+        }],
       });
     } catch (e) {
+      console.error('Email login error:', e);
       setError(e.message);
     }
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onBack} style={styles.backButton}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
 

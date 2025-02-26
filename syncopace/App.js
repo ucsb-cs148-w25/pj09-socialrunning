@@ -1,8 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
-import { useEffect, useState } from 'react';
-import { useAuthRequest, ResponseType } from 'expo-auth-session';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -11,81 +9,21 @@ import LoginScreen from './LoginScreen';
 import CreatePlaylistScreen from './CreatePlaylistScreen';
 import PlaylistScreen from './PlaylistScreen';
 
-WebBrowser.maybeCompleteAuthSession();
 const Stack = createStackNavigator();
 
-function MainScreen({ navigation }) {
-  const [userInfo, setUserInfo] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+function MainScreen({ navigation, route }) {
+  const { userInfo, setUserInfo } = route.params;
   const [accessToken, setAccessToken] = useState(null);
 
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      responseType: ResponseType.Token,
-      clientId: '15583efa68154211a31ca3a901d13c71',
-      scopes: [
-        'user-read-email',
-        'user-read-private',
-        'playlist-read-private',
-        'playlist-modify-public',
-        'playlist-modify-private',
-      ],
-      redirectUri: 'exp://exp.host/@rkibel/syncopace',
-    },
-    {
-      authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-      tokenEndpoint: 'https://accounts.spotify.com/api/token',
-    }
-  );
+  const handleSignOut = () => {
+    route.params.setUserInfo(null);
+    setAccessToken(null);
 
-  useEffect(() => {
-    if (response?.type === 'success') {
-      handleSignInResponse();
-    }
-  }, [response]);
-
-  const handleSignInResponse = async () => {
-    if (response?.type === 'success') {
-      setLoading(true);
-      setError(null);
-      try {
-        const { access_token } = response.params;
-        setAccessToken(access_token);
-
-        const userResponse = await fetch('https://api.spotify.com/v1/me', {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
-        });
-        const userData = await userResponse.json();
-        setUserInfo(userData);
-      } catch (e) {
-        setError('Failed to get user information');
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    }
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Main' }],
+    });
   };
-
-  const handleSpotifyLogin = async () => {
-    setError(null);
-    try {
-      await promptAsync();
-    } catch (e) {
-      setError('Failed to start sign in');
-      console.error(e);
-    }
-  };
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#1DB954" />
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -95,12 +33,12 @@ function MainScreen({ navigation }) {
           <Text style={styles.lightText}>You're successfully logged in</Text>
           <TouchableOpacity
             style={styles.createPlaylistButton}
-            onPress={() => navigation.navigate('CreatePlaylist', {accessToken})}
+            onPress={() => navigation.navigate('CreatePlaylist', { accessToken: userInfo.spotify_token })}
           >
             <Text style={styles.buttonText}>Create Playlist</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => setUserInfo(null)}
+            onPress={handleSignOut}
             style={styles.signOutButton}
           >
             <Text style={styles.buttonText}>Sign Out</Text>
@@ -117,13 +55,6 @@ function MainScreen({ navigation }) {
           </Text>
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.spotifyButton}
-              onPress={handleSpotifyLogin}
-            >
-              <Text style={styles.buttonText}>LOGIN WITH SPOTIFY</Text>
-            </TouchableOpacity>
-
             <TouchableOpacity
               style={styles.signUpButton}
               onPress={() => navigation.navigate('SignUp')}
@@ -150,6 +81,8 @@ function MainScreen({ navigation }) {
 }
 
 export default function App() {
+  const [userInfo, setUserInfo] = useState(null);
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -158,9 +91,21 @@ export default function App() {
           cardStyle: { backgroundColor: '#121212' },
         }}
       >
-        <Stack.Screen name="Main" component={MainScreen} />
+        <Stack.Screen
+          name="Main"
+          component={MainScreen}
+          initialParams={{
+            userInfo,
+            setUserInfo: (newUserInfo) => {
+              setUserInfo(newUserInfo);
+            }
+          }}
+        />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+        />
         <Stack.Screen name="CreatePlaylist" component={CreatePlaylistScreen} />
         <Stack.Screen name="PlaylistScreen" component={PlaylistScreen} />
       </Stack.Navigator>

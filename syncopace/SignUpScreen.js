@@ -8,7 +8,7 @@ import { useAuthRequest, ResponseType } from 'expo-auth-session';
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function SignUpScreen({ onSwitchToLogin, onBack }) {
+export default function SignUpScreen({ navigation, route }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -37,8 +37,8 @@ export default function SignUpScreen({ onSwitchToLogin, onBack }) {
       const response = await promptAsync();
       if (response?.type === 'success') {
         const { access_token } = response.params;
+        console.log('Spotify access token:', access_token);
 
-        // Fetch user info from Spotify
         const userResponse = await fetch('https://api.spotify.com/v1/me', {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -46,11 +46,30 @@ export default function SignUpScreen({ onSwitchToLogin, onBack }) {
         });
 
         const userData = await userResponse.json();
-        // Handle Spotify user data as needed
-        console.log('Spotify User Data:', userData);
-        // You might want to link Spotify account with your Firebase user here
+
+        const formattedUserData = {
+          display_name: userData.display_name,
+          email: userData.email,
+          uid: userData.id,
+          spotify_token: access_token
+        };
+
+        // Update parent state and navigate
+        if (route.params?.onLoginSuccess) {
+          route.params.onLoginSuccess(formattedUserData);
+        }
+
+        // Reset navigation to Main screen with user data
+        navigation.reset({
+          index: 0,
+          routes: [{
+            name: 'Main',
+            params: { userInfo: formattedUserData }
+          }],
+        });
       }
     } catch (err) {
+      console.error('Spotify signup error:', err);
       setError('Failed to sign up with Spotify');
     }
   };
@@ -60,9 +79,10 @@ export default function SignUpScreen({ onSwitchToLogin, onBack }) {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       console.log('User created successfully!');
-      // Automatically navigate to the login screen after successful sign up
-      if (onSwitchToLogin) onSwitchToLogin();
+      // Navigate to login screen after successful sign up
+      navigation.navigate('Login');
     } catch (e) {
+      console.error('Sign up error:', e);
       setError(e.message);
     }
   };
@@ -70,7 +90,7 @@ export default function SignUpScreen({ onSwitchToLogin, onBack }) {
   return (
     <View style={styles.container}>
       {/* Back Button */}
-      <TouchableOpacity onPress={onBack} style={styles.backButton}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
 
@@ -118,7 +138,7 @@ export default function SignUpScreen({ onSwitchToLogin, onBack }) {
           <Text style={styles.spotifyButtonText}>SIGN UP WITH SPOTIFY</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={onSwitchToLogin} style={styles.loginRedirectButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.loginRedirectButton}>
           <Text style={styles.loginRedirectText}>Already have an account? Log In</Text>
         </TouchableOpacity>
       </View>
@@ -166,7 +186,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   signUpButton: {
-    backgroundColor: '#1DB954', // Spotify's green color
+    backgroundColor: '#2196F3', // Changed from '#1DB954' to blue
     borderRadius: 25,
     padding: 16,
     alignItems: 'center',

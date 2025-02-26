@@ -1,6 +1,6 @@
 // SignUpScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './firebaseConfig';
 import * as WebBrowser from 'expo-web-browser';
@@ -24,7 +24,10 @@ export default function SignUpScreen({ onSwitchToLogin, onBack }) {
         'playlist-modify-public',
         'playlist-modify-private'
       ],
-      redirectUri: 'exp://exp.host/@rkibel/syncopace',
+      redirectUri: Platform.select({
+        web: 'http://localhost:8081/',
+        default: 'exp://exp.host/@rkibel/syncopace'
+      }),
     },
     {
       authorizationEndpoint: 'https://accounts.spotify.com/authorize',

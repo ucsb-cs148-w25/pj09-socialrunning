@@ -1,7 +1,7 @@
 Project09: Social Running
 Mentor: Self-Mentored
 
-Meeting Time: lab12 
+Meeting Time: lec12 
 
 Type of meeting: daily scrum
 

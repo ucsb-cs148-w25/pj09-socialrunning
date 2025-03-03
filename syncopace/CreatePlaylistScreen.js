@@ -29,7 +29,7 @@ export default function CreatePlaylistScreen() {
     };
 
     try {
-      const backendUrl = "http://169.231.212.83:5001/get_songs";
+      const backendUrl = "http://169.231.215.47:5001/get_songs";
 
       // Fetch songs based on the selected cardio zone and duration
       const response = await fetch(
@@ -59,7 +59,7 @@ export default function CreatePlaylistScreen() {
       }
 
       // Now create the playlist in the user's Spotify account
-      const createPlaylistUrl = "http://169.231.212.83:5001/create_playlist";
+      const createPlaylistUrl = "http://169.231.215.47:5001/create_playlist";
 
       const createPlaylistResponse = await fetch(createPlaylistUrl, {
         method: "POST",
@@ -79,6 +79,7 @@ export default function CreatePlaylistScreen() {
       }
 
       const playlistData = await createPlaylistResponse.json();
+      console.log(playlistData);
 
       Alert.alert(
         "Playlist Created",
@@ -89,6 +90,7 @@ export default function CreatePlaylistScreen() {
       // Navigate to the PlaylistScreen
       navigation.navigate("PlaylistScreen", {
         playlist: playlistData,
+        playlistId: playlistData.playlist_id,
         zone: zoneMapping[cardioZone],
         songs: data.songs,
         missingSongs: data.missing_songs,

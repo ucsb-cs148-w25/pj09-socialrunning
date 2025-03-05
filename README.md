@@ -1,6 +1,6 @@
 # Project 9: Social Running App
 
-### This is a social running app (mobile) that syncs your run pace with custom, shareable music playlists, using your ideal cardio zone and desired running length to suggest songs that keep you motivated and within your desire range throughout your run!
+### This is a running app that creates custom music playlists, using your ideal cardio zone, genre of music, mood (e.g., "gloomy day jog")  and desired running length to suggest songs that keep you motivated throughout your run! Users can share these playlists via Spotify and save them for future use. 
 
 ## Instructions for setup:
 ## Backend Setup (Python)

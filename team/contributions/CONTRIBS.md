@@ -16,4 +16,4 @@
 - Assisted development of API route to generate the playlist in the user's Spotify
 - Minor UX improvements to Playlist page
 - Added button to open generated playlist directly in Spotify (in PR phase)
-- Led most daily scrums
+- Led many daily scrums

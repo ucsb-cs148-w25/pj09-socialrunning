@@ -33,3 +33,12 @@
 - Worked on feature to create user's playlist in their spotify account
 - Helped with the first unit testing  
 - led few scrums
+
+## Adil's contributions
+- Set up Flask and ideated that fact that our application needs Flask to run
+- Documented how to run backend and frontend
+- Worked with Aneesh to set up AI generated Playlist with flask and frontend
+- Integrated OpenAI and other packages
+- set up requirements.txt
+- UI and minor fixes with ria
+- Delegated tasks to team and made sure we all ahad work to do

@@ -19,6 +19,14 @@
 - Led many daily scrums
 
 
+## Aneesh's contributions
+- Built out the backend in Flask which queries songs from a csv that contains a range of songs with different BPM
+- Used the Spotify API to gather songs within tempo and return it to the frontend with playback options
+- Added navigator to the App.js so we could add API call routing
+- Made minor adjustments to the create playlist page 
+- Created a playback page for the user which displays newly built playlist for different zones in thier run
+- Worked with Adil to implement OpenAI API calls to reccomend songs based on text based descriptions
+
 ## Piyush' contributions
 - Worked on Playlist Creation page to get user's playlist preferences
 - Small design implementations to playlist page (buttons, dropdown, etc.)

@@ -16,6 +16,8 @@ export default function CreatePlaylistScreen() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  console.log(accessToken)
+
   const handleCreatePlaylist = async () => {
     if (!validateForm()) return;
 

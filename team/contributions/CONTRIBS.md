@@ -17,3 +17,11 @@
 - Minor UX improvements to Playlist page
 - Added button to open generated playlist directly in Spotify (in PR phase)
 - Led many daily scrums
+
+
+## Piyush' contributions
+- Worked on Playlist Creation page to get user's playlist preferences
+- Small design implementations to playlist page (buttons, dropdown, etc.)
+- Worked on feature to create user's playlist in their spotify account
+- Helped with the first unit testing  
+- led few scrums

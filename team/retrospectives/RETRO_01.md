@@ -10,8 +10,8 @@
 
 Report:
 * successes: a list of things that worked well over the quarter so far. 
-* a goal: identify something the team wants to get better at
-* a commitment: identify one thing that the team pledges to do to maximize productivity towards launch
+* a goal: A goal for us is to check our pull requests more thoroughly instead of merging it if there are no conflicts or merging it without getting anyone to look at the request. Additionally, we think communicating better about the purpose behind some of the code we build would be better for our team.
+* a commitment: We will set time throughout the week to do pair programming and ensure that the app is deployed well ahead of time so that we are not stressing about it last minute. 
 
 # Optional
 

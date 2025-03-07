@@ -42,3 +42,11 @@
 - set up requirements.txt
 - UI and minor fixes with ria
 - Delegated tasks to team and made sure we all ahad work to do
+
+## Ria's contributions
+- Assisted development of API route to generate the playlist in the user's Spotify
+- Wrote tests for the app
+- Led a couple scrums
+- UI and bug fixes with Adil
+- Wrote many team documentation files for unit testing, user testing/feedback, and design requirements
+- Led last team retro

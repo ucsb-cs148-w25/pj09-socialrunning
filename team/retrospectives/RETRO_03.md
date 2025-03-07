@@ -1,8 +1,7 @@
 # Date of Retrospective: 03/07/25
 
 * Led by: Ria Sinha
-* Present: Piyush, Aneesh, Nilay, Ron
-* Absent: Liv, Adil
+* Present: Piyush, Aneesh, Nilay, Ron, Liv, Adil
 
 ## Action item 1
 

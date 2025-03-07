@@ -15,5 +15,4 @@ Report:
 
 # Optional
 
-* Record anything else you think the team might want to remember from this retro:
-- 
+* Record anything else you think the team might want to remember from this retro: 

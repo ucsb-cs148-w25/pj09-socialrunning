@@ -241,6 +241,8 @@ def generate_ai_playlist():
     except Exception as e:
         return jsonify({"error": "Failed to authenticate or create playlist", "details": str(e)}), 500
 
+    songs_added = []
+    songs_missing = []
     # Search and add songs to playlist
     for song in cleaned_songs:
         result = sp_user.search(q=song, type="track", limit=1)
@@ -248,9 +250,14 @@ def generate_ai_playlist():
         if tracks:
             track_uri = tracks[0]["uri"]
             song_uris.append(track_uri)
+            songs_added.append(song)
             print(f"✅ Found: {song} → {track_uri}")
         else:
+            songs_missing.append(song)
             print(f"❌ Not Found: {song}")
+
+    added_songs = [{"name": song} for song in songs_added]
+    missing_songs = [{"name": song} for song in songs_missing]
 
     if song_uris:
         try:
@@ -264,9 +271,10 @@ def generate_ai_playlist():
         "message": "Playlist created successfully!",
         "playlist_id": playlist_id,
         "playlist_url": playlist_url,
-        "added_songs": song_uris,
-        "missing_songs": [song for song in cleaned_songs if song not in song_uris]
+        "added_songs": added_songs,
+        "missing_songs": missing_songs
     })
+
 
 
 

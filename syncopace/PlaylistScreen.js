@@ -7,10 +7,11 @@ import {
   FlatList,
   ActivityIndicator,
   Alert,
+  Linking,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 
 // Component for the embedded Spotify player using WebView
 const SpotifyPlayer = ({ trackId }) => {
@@ -37,18 +38,21 @@ const SpotifyPlayer = ({ trackId }) => {
 export default function PlaylistScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { playlist, zone, songs, missingSongs } = route.params;
+  const { playlist, playlistId, zone, songs, missingSongs } = route.params;
   const [currentSongIndex, setCurrentSongIndex] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const getZoneColor = (zone) => {
+    if (zone == null) {
+        return '#1DB954'; 
+    }
     const colors = {
-      '1': '#4CAF50',
-      '2': '#FFC107',
-      '3': '#F44336',
+        '1': '#4CAF50',
+        '2': '#FFC107',
+        '3': '#F44336',
     };
-    return colors[zone] || '#1DB954';
-  };
+    return colors[zone] || '#1DB954'; 
+};
 
   const getTotalDuration = () => {
     const totalMinutes = songs.reduce((acc, song) => {
@@ -162,6 +166,18 @@ export default function PlaylistScreen() {
               {missingSongs.length} song{missingSongs.length !== 1 ? 's' : ''}{' '} couldn't be found on Spotify and were excluded.
             </Text>
           </View>
+        )}
+        {/* Open in Spotify Button */}
+        {playlistId && (
+          <TouchableOpacity
+            style={styles.spotifyButton}
+            onPress={() => Linking.openURL(`https://open.spotify.com/playlist/${playlistId}`)}
+          >
+            <View style={styles.spotifyButtonContent}>
+              <Text style={styles.spotifyButtonText}>Open in Spotify </Text>
+              <FontAwesome name="spotify" size={24} color="green" />
+            </View>
+          </TouchableOpacity>
         )}
       </View>
     );
@@ -356,5 +372,26 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.7)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  spotifyButton: {
+    backgroundColor: '#1DB954',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  spotifyButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  spotifyIcon: {
+    marginRight: 8,
+  },
+  spotifyButtonContent: {
+    flexDirection: 'row',  
+    alignItems: 'center',  
   },
 });

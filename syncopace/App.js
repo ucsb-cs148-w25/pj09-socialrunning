@@ -31,7 +31,7 @@ function MainScreen({ navigation, route }) {
 
     try {
 
-      const response = await fetch('http://192.168.0.232:5001/generate_ai_playlist', {
+      const response = await fetch('http://169.231.219.152:5001/generate_ai_playlist', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,15 +43,27 @@ function MainScreen({ navigation, route }) {
       });
 
       const data = await response.json();
-      console.log(data)
+      // console.log("RESPONSE:\n");
+      // console.log(data);
 
       if (response.ok) {
-        Alert.alert('Success', `Playlist created successfully! View it [here](${data.playlist_url}).`);
+        navigation.navigate('PlaylistScreen', {
+          playlist: data.playlist, 
+          playlistId: data.playlist_id,
+          zone: data.zone || null, 
+          songs: data.added_songs || [], 
+          missingSongs: data.missing_songs || [] 
+        });
+        // playlist: playlistData,
+        // playlistId: playlistData.playlist_id,
+        // zone: zoneMapping[cardioZone],
+        // songs: data.songs,
+        // missingSongs: data.missing_songs,
       } else {
         Alert.alert('Error', data.error || 'Failed to create playlist.');
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };

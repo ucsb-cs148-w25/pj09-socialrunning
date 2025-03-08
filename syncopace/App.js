@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,16 +13,62 @@ const Stack = createStackNavigator();
 
 function MainScreen({ navigation, route }) {
   const { userInfo, setUserInfo } = route.params;
-  const [accessToken, setAccessToken] = useState(null);
+  const [query, setQuery] = useState('');
 
   const handleSignOut = () => {
     route.params.setUserInfo(null);
-    setAccessToken(null);
-
     navigation.reset({
       index: 0,
       routes: [{ name: 'Main' }],
     });
+  };
+
+  const handleAIGeneratePlaylist = async () => {
+    if (!query.trim()) {
+      Alert.alert('Error', 'Please enter a mood or genre to generate a playlist.');
+      return;
+    }
+
+    try {
+
+      const response = await fetch('http://169.231.219.152:5001/generate_ai_playlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: query,
+          access_token: userInfo.spotify_token,
+        }),
+      });
+
+      const data = await response.json();
+      // console.log("RESPONSE:\n");
+      // console.log(data);
+
+      const filteredData = {
+        message: data.message,
+        playlist_id: data.playlist_id,
+        playlist_url: data.playlist_url
+      };
+
+      // console.log(filteredData);
+      if (response.ok) {
+        navigation.navigate('PlaylistScreen', {
+          playlist: filteredData, 
+          playlistId: filteredData.playlist_id,
+          zone: data.zone || null, 
+          songs: data.added_songs || [], 
+          missingSongs: data.missing_songs || [] 
+        });
+        
+      } else {
+        Alert.alert('Error', data.error || 'Failed to create playlist.');
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -31,16 +77,31 @@ function MainScreen({ navigation, route }) {
         <View style={styles.content}>
           <Text style={[styles.title, styles.lightText]}>Welcome, {userInfo.display_name}!</Text>
           <Text style={styles.lightText}>You're successfully logged in</Text>
+
+          {/* Text Input for User Query */}
+          <TextInput
+            style={styles.input}
+            placeholder="Type your mood, we generate the playlist"
+            placeholderTextColor="#ccc"
+            value={query}
+            onChangeText={setQuery}
+          />
+
+          {/* Generate AI Playlist Button */}
+          <TouchableOpacity style={styles.generatePlaylistButton} onPress={handleAIGeneratePlaylist}>
+            <Text style={styles.buttonText}>Generate AI Playlist</Text>
+          </TouchableOpacity>
+
+          {/* Create Playlist Button */}
           <TouchableOpacity
             style={styles.createPlaylistButton}
             onPress={() => navigation.navigate('CreatePlaylist', { accessToken: userInfo.spotify_token })}
           >
             <Text style={styles.buttonText}>Create Playlist</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={handleSignOut}
-            style={styles.signOutButton}
-          >
+
+          {/* Sign Out Button */}
+          <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
             <Text style={styles.buttonText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
@@ -102,10 +163,7 @@ export default function App() {
           }}
         />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-        />
+        <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="CreatePlaylist" component={CreatePlaylistScreen} />
         <Stack.Screen name="PlaylistScreen" component={PlaylistScreen} />
       </Stack.Navigator>
@@ -117,14 +175,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#121212',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
   content: {
-    flex: 1,
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 180,
-    paddingBottom: 80,
-    paddingHorizontal: 20,
+    width: '100%',
   },
   titleContainer: {
     marginBottom: 20,
@@ -142,16 +199,47 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     lineHeight: 32,
   },
+  input: {
+    width: '100%',
+    padding: 12,
+    borderRadius: 5,
+    backgroundColor: '#333',
+    color: '#fff',
+    marginBottom: 15,
+    fontSize: 16,
+  },
   buttonContainer: {
     width: '80%',
     alignItems: 'center',
   },
-  spotifyButton: {
+  generatePlaylistButton: {
     backgroundColor: '#1DB954',
-    width: '100%',
-    paddingVertical: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 40,
     borderRadius: 25,
-    marginBottom: 16,
+    marginVertical: 10,
+    alignSelf: 'center',
+  },
+  createPlaylistButton: {
+    backgroundColor: '#1DB954',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 25,
+    marginVertical: 10,
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  signOutButton: {
+    backgroundColor: '#ff4444',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 25,
+    marginVertical: 10,
   },
   signUpButton: {
     backgroundColor: '#2196F3',
@@ -169,32 +257,11 @@ const styles = StyleSheet.create({
     borderColor: '#FFFFFF',
     marginBottom: 100,
   },
-  createPlaylistButton: {
-    backgroundColor: '#1DB954',
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 25,
-    marginTop: 10,
-    alignSelf: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
   termsText: {
     color: '#B3B3B3',
     fontSize: 12,
     textAlign: 'center',
     paddingHorizontal: 40,
-  },
-  signOutButton: {
-    backgroundColor: '#282828',
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 25,
-    marginVertical: 10,
   },
   lightText: {
     color: '#FFFFFF',

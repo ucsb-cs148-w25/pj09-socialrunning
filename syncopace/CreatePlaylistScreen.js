@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
+// import { play } from 'react-native-track-player/lib/src/trackPlayer';
 
 export default function CreatePlaylistScreen() {
   const route = useRoute();
@@ -15,6 +16,8 @@ export default function CreatePlaylistScreen() {
   const [duration, setDuration] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // console.log(accessToken)
 
   const handleCreatePlaylist = async () => {
     if (!validateForm()) return;
@@ -29,7 +32,7 @@ export default function CreatePlaylistScreen() {
     };
 
     try {
-      const backendUrl = "http://169.231.212.83:5001/get_songs";
+      const backendUrl = "http://169.231.219.152:5001/get_songs";
 
       // Fetch songs based on the selected cardio zone and duration
       const response = await fetch(
@@ -59,7 +62,7 @@ export default function CreatePlaylistScreen() {
       }
 
       // Now create the playlist in the user's Spotify account
-      const createPlaylistUrl = "http://169.231.212.83:5001/create_playlist";
+      const createPlaylistUrl = "http://169.231.219.152:5001/create_playlist";
 
       const createPlaylistResponse = await fetch(createPlaylistUrl, {
         method: "POST",
@@ -85,10 +88,12 @@ export default function CreatePlaylistScreen() {
         `Your playlist has been added to your Spotify!`,
         [{ text: "OK" }]
       );
-
+      // console.log("CREATE RESPONSE:");
+      // console.log(playlistData);
       // Navigate to the PlaylistScreen
       navigation.navigate("PlaylistScreen", {
         playlist: playlistData,
+        playlistId: playlistData.playlist_id,
         zone: zoneMapping[cardioZone],
         songs: data.songs,
         missingSongs: data.missing_songs,

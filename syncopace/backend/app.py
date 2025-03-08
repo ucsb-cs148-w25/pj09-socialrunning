@@ -7,6 +7,16 @@ from dotenv import load_dotenv
 import ast
 import os
 from flask_cors import CORS
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
+import re
+load_dotenv()
+
+
+# Retrieve the OpenAI API key from environment variables
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -52,7 +62,7 @@ def create_playlist():
     - `playlist_name` (str): Name of the playlist.
     - `track_uris` (list): List of Spotify track URIs to add.
     """
-
+    # print('hihihihhiih')
     data = request.json
     access_token = data.get("access_token")
     playlist_name = data.get("playlist_name")
@@ -182,6 +192,91 @@ def get_songs():
    # songs_list = filtered_df.to_dict(orient='records')
   
    # return jsonify({'songs': songs_list})
+
+
+
+@app.route('/generate_ai_playlist', methods=['POST'])
+def generate_ai_playlist():
+    data = request.get_json()
+    query = data.get('query')
+    access_token = data.get("access_token")
+    # print(access_token)
+
+    if not access_token or not query:
+        return jsonify({"error": "Missing access_token or query"}), 400
+
+    client = OpenAI()
+
+    completion = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "developer", "content": "You are a music generator. Only give me a list of songs back and nothing else. Format using 1, 2, 3. etc."},
+            {
+                "role": "user",
+                "content": f"Generate 20 songs given this: {query}"
+            }
+        ]
+    )
+
+    response_text = str(completion.choices[0].message.content)
+
+    # Use regex to extract song names
+    songs = re.findall(r'\d+\.\s(.+)', response_text)
+    cleaned_songs = [song.rstrip() for song in songs]
+    print(cleaned_songs)
+    song_uris = []
+
+    # Authenticate user with their access token
+    try:
+        sp_user = spotipy.Spotify(auth=access_token)
+
+        # Get the user's Spotify ID
+        user_id = sp_user.current_user()["id"]
+
+        # Create a new playlist
+        playlist = sp_user.user_playlist_create(user=user_id, name=f"{query} Playlist", public=True)
+        playlist_id = playlist["id"]
+        playlist_url = playlist["external_urls"]["spotify"]
+
+    except Exception as e:
+        return jsonify({"error": "Failed to authenticate or create playlist", "details": str(e)}), 500
+
+    songs_added = []
+    songs_missing = []
+    # Search and add songs to playlist
+    for song in cleaned_songs:
+        result = sp_user.search(q=song, type="track", limit=1)
+        tracks = result.get("tracks", {}).get("items", [])
+        if tracks:
+            track_uri = tracks[0]["uri"]
+            song_uris.append(track_uri)
+            songs_added.append(song)
+            # print(f"✅ Found: {song} → {track_uri}")
+        else:
+            songs_missing.append(song)
+            # print(f"❌ Not Found: {song}")
+
+    added_songs = [{"name": song} for song in songs_added]
+    missing_songs = [{"name": song} for song in songs_missing]
+
+    if song_uris:
+        try:
+            sp_user.playlist_add_items(playlist_id, song_uris)
+            # print("🎵 Songs added successfully!")
+        except Exception as e:
+            return jsonify({"error": "Failed to add songs to playlist", "details": str(e)}), 500
+
+    # Return JSON response with playlist details
+    return jsonify({
+        "message": "Playlist created successfully!",
+        "playlist_id": playlist_id,
+        "playlist_url": playlist_url,
+        "added_songs": added_songs,
+        "missing_songs": missing_songs
+    })
+
+
+
 
 
 if __name__ == '__main__':

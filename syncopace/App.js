@@ -46,19 +46,22 @@ function MainScreen({ navigation, route }) {
       // console.log("RESPONSE:\n");
       // console.log(data);
 
+      const filteredData = {
+        message: data.message,
+        playlist_id: data.playlist_id,
+        playlist_url: data.playlist_url
+      };
+
+      // console.log(filteredData);
       if (response.ok) {
         navigation.navigate('PlaylistScreen', {
-          playlist: data.playlist, 
-          playlistId: data.playlist_id,
+          playlist: filteredData, 
+          playlistId: filteredData.playlist_id,
           zone: data.zone || null, 
           songs: data.added_songs || [], 
           missingSongs: data.missing_songs || [] 
         });
-        // playlist: playlistData,
-        // playlistId: playlistData.playlist_id,
-        // zone: zoneMapping[cardioZone],
-        // songs: data.songs,
-        // missingSongs: data.missing_songs,
+        
       } else {
         Alert.alert('Error', data.error || 'Failed to create playlist.');
       }

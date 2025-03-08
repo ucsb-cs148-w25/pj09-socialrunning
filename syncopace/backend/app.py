@@ -62,7 +62,7 @@ def create_playlist():
     - `playlist_name` (str): Name of the playlist.
     - `track_uris` (list): List of Spotify track URIs to add.
     """
-    print('hihihihhiih')
+    # print('hihihihhiih')
     data = request.json
     access_token = data.get("access_token")
     playlist_name = data.get("playlist_name")
@@ -200,7 +200,7 @@ def generate_ai_playlist():
     data = request.get_json()
     query = data.get('query')
     access_token = data.get("access_token")
-    print(access_token)
+    # print(access_token)
 
     if not access_token or not query:
         return jsonify({"error": "Missing access_token or query"}), 400
@@ -251,10 +251,10 @@ def generate_ai_playlist():
             track_uri = tracks[0]["uri"]
             song_uris.append(track_uri)
             songs_added.append(song)
-            print(f"✅ Found: {song} → {track_uri}")
+            # print(f"✅ Found: {song} → {track_uri}")
         else:
             songs_missing.append(song)
-            print(f"❌ Not Found: {song}")
+            # print(f"❌ Not Found: {song}")
 
     added_songs = [{"name": song} for song in songs_added]
     missing_songs = [{"name": song} for song in songs_missing]
@@ -262,7 +262,7 @@ def generate_ai_playlist():
     if song_uris:
         try:
             sp_user.playlist_add_items(playlist_id, song_uris)
-            print("🎵 Songs added successfully!")
+            # print("🎵 Songs added successfully!")
         except Exception as e:
             return jsonify({"error": "Failed to add songs to playlist", "details": str(e)}), 500
 

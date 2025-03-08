@@ -17,7 +17,7 @@ export default function CreatePlaylistScreen() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log(accessToken)
+  // console.log(accessToken)
 
   const handleCreatePlaylist = async () => {
     if (!validateForm()) return;
@@ -88,8 +88,8 @@ export default function CreatePlaylistScreen() {
         `Your playlist has been added to your Spotify!`,
         [{ text: "OK" }]
       );
-      // console.log("RESPONSE:");
-      // console.log(playlistData, zoneMapping[cardioZone], data.songs, data.missing_songs);
+      // console.log("CREATE RESPONSE:");
+      // console.log(playlistData);
       // Navigate to the PlaylistScreen
       navigation.navigate("PlaylistScreen", {
         playlist: playlistData,

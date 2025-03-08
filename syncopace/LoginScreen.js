@@ -38,7 +38,7 @@ export default function LoginScreen({ navigation, route }) {
       const response = await promptAsync();
       if (response?.type === 'success') {
         const { access_token } = response.params;
-        console.log('Spotify access token:', access_token);
+        // console.log('Spotify access token:', access_token);
 
         const userResponse = await fetch('https://api.spotify.com/v1/me', {
           headers: {

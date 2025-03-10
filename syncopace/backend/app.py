@@ -29,9 +29,11 @@ songs_df = pd.read_csv('tracks_features.csv')
 
 # Define tempo ranges for zones
 ZONE_BOUNDS = {
-   1: (60, 100),  # Slower songs
-   2: (100, 130), # Moderate pace
-   3: (130, 180)  # Faster songs
+   1: (60, 84),   # Zone 1: Recovery/Easy run
+   2: (84, 108),  # Zone 2: Light run
+   3: (108, 132), # Zone 3: Moderate run
+   4: (132, 156), # Zone 4: Hard run
+   5: (156, 180)  # Zone 5: Sprint/VO2 max
 }
 
 

@@ -62,7 +62,6 @@ def create_playlist():
     - `playlist_name` (str): Name of the playlist.
     - `track_uris` (list): List of Spotify track URIs to add.
     """
-    # print('hihihihhiih')
     data = request.json
     access_token = data.get("access_token")
     playlist_name = data.get("playlist_name")
@@ -223,7 +222,7 @@ def generate_ai_playlist():
     # Use regex to extract song names
     songs = re.findall(r'\d+\.\s(.+)', response_text)
     cleaned_songs = [song.rstrip() for song in songs]
-    print(cleaned_songs)
+    # print(cleaned_songs)
     song_uris = []
 
     # Authenticate user with their access token

@@ -29,10 +29,12 @@ export default function CreatePlaylistScreen() {
       zone1: 1,
       zone2: 2,
       zone3: 3,
+      zone4: 4,
+      zone5: 5,
     };
 
     try {
-      const backendUrl = "http://169.231.219.152:5001/get_songs";
+      const backendUrl = "http://169.231.101.0:5001/get_songs";
 
       // Fetch songs based on the selected cardio zone and duration
       const response = await fetch(
@@ -62,7 +64,7 @@ export default function CreatePlaylistScreen() {
       }
 
       // Now create the playlist in the user's Spotify account
-      const createPlaylistUrl = "http://169.231.219.152:5001/create_playlist";
+      const createPlaylistUrl = "http://169.231.101.0:5001/create_playlist";
 
       const createPlaylistResponse = await fetch(createPlaylistUrl, {
         method: "POST",
@@ -162,9 +164,11 @@ export default function CreatePlaylistScreen() {
               dropdownIconColor="#FFFFFF"
             >
               <Picker.Item label="Choose a zone" value="" color="#FFFFFF" />
-              <Picker.Item label="Zone 1 (60-100 BPM)" value="zone1" color="#FFFFFF" />
-              <Picker.Item label="Zone 2 (100-130 BPM)" value="zone2" color="#FFFFFF" />
-              <Picker.Item label="Zone 3 (130-180 BPM)" value="zone3" color="#FFFFFF" />
+              <Picker.Item label="Zone 1 (60-84 BPM)" value="zone1" color="#FFFFFF" />
+              <Picker.Item label="Zone 2 (84-108 BPM)" value="zone2" color="#FFFFFF" />
+              <Picker.Item label="Zone 3 (108-132 BPM)" value="zone3" color="#FFFFFF" />
+              <Picker.Item label="Zone 4 (132-156 BPM)" value="zone4" color="#FFFFFF" />
+              <Picker.Item label="Zone 5 (156-180 BPM)" value="zone5" color="#FFFFFF" />
             </Picker>
           </View>
 

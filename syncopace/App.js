@@ -8,6 +8,7 @@ import SignUpScreen from './SignUpScreen';
 import LoginScreen from './LoginScreen';
 import CreatePlaylistScreen from './CreatePlaylistScreen';
 import PlaylistScreen from './PlaylistScreen';
+import config from './config';
 
 const Stack = createStackNavigator();
 
@@ -30,8 +31,7 @@ function MainScreen({ navigation, route }) {
     }
 
     try {
-
-      const response = await fetch('http://169.231.219.152:5001/generate_ai_playlist', {
+      const response = await fetch(`http://${config.SERVER_IP}:${config.SERVER_PORT}/generate_ai_playlist`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

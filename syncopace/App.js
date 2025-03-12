@@ -42,6 +42,7 @@ function MainScreen({ navigation, route }) {
       );
       return;
     }
+    setLoading(true);
 
     try {
       const response = await fetch(`http://${config.SERVER_IP}:${config.SERVER_PORT}/generate_ai_playlist`, {
@@ -54,7 +55,6 @@ function MainScreen({ navigation, route }) {
           access_token: userInfo.spotify_token,
         }),
       });
-    setLoading(true);
 
 
 

@@ -1,46 +1,62 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { StatusBar } from "expo-status-bar";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+import { useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
-import SignUpScreen from './SignUpScreen';
-import LoginScreen from './LoginScreen';
-import CreatePlaylistScreen from './CreatePlaylistScreen';
-import PlaylistScreen from './PlaylistScreen';
+import SignUpScreen from "./SignUpScreen";
+import LoginScreen from "./LoginScreen";
+import CreatePlaylistScreen from "./CreatePlaylistScreen";
+import PlaylistScreen from "./PlaylistScreen";
 
 const Stack = createStackNavigator();
 
 function MainScreen({ navigation, route }) {
   const { userInfo, setUserInfo } = route.params;
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignOut = () => {
     route.params.setUserInfo(null);
     navigation.reset({
       index: 0,
-      routes: [{ name: 'Main' }],
+      routes: [{ name: "Main" }],
     });
   };
 
   const handleAIGeneratePlaylist = async () => {
     if (!query.trim()) {
-      Alert.alert('Error', 'Please enter a mood or genre to generate a playlist.');
+      Alert.alert(
+        "Error",
+        "Please enter a mood or genre to generate a playlist."
+      );
       return;
     }
 
-    try {
+    setLoading(true);
 
-      const response = await fetch('http://169.231.219.152:5001/generate_ai_playlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: query,
-          access_token: userInfo.spotify_token,
-        }),
-      });
+    try {
+      const response = await fetch(
+        "http://169.231.72.83:5001/generate_ai_playlist",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: query,
+            access_token: userInfo.spotify_token,
+          }),
+        }
+      );
 
       const data = await response.json();
       // console.log("RESPONSE:\n");
@@ -49,25 +65,26 @@ function MainScreen({ navigation, route }) {
       const filteredData = {
         message: data.message,
         playlist_id: data.playlist_id,
-        playlist_url: data.playlist_url
+        playlist_url: data.playlist_url,
       };
 
       // console.log(filteredData);
       if (response.ok) {
-        navigation.navigate('PlaylistScreen', {
-          playlist: filteredData, 
+        navigation.navigate("PlaylistScreen", {
+          playlist: filteredData,
           playlistId: filteredData.playlist_id,
-          zone: data.zone || null, 
-          songs: data.added_songs || [], 
-          missingSongs: data.missing_songs || [] 
+          zone: data.zone || null,
+          songs: data.added_songs || [],
+          missingSongs: data.missing_songs || [],
         });
-        
       } else {
-        Alert.alert('Error', data.error || 'Failed to create playlist.');
+        Alert.alert("Error", data.error || "Failed to create playlist.");
       }
     } catch (error) {
       console.log(error);
-      Alert.alert('Error', 'Something went wrong. Please try again.');
+      Alert.alert("Error", "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,8 +92,13 @@ function MainScreen({ navigation, route }) {
     <View style={styles.container}>
       {userInfo ? (
         <View style={styles.content}>
-          <Text style={[styles.title, styles.lightText]}>Welcome, {userInfo.display_name}!</Text>
-          <Text style={styles.lightText}>You're successfully logged in</Text>
+          {/* Top Welcome Container */}
+          <View style={styles.topContainer}>
+            <Text style={[styles.title, styles.lightText]}>
+              Welcome, {userInfo.display_name}!
+            </Text>
+            <Text style={styles.lightText}>You're successfully logged in</Text>
+          </View>
 
           {/* Text Input for User Query */}
           <TextInput
@@ -88,20 +110,37 @@ function MainScreen({ navigation, route }) {
           />
 
           {/* Generate AI Playlist Button */}
-          <TouchableOpacity style={styles.generatePlaylistButton} onPress={handleAIGeneratePlaylist}>
-            <Text style={styles.buttonText}>Generate AI Playlist</Text>
-          </TouchableOpacity>
+          {loading ? (
+            <ActivityIndicator size="large" color="#1DB954" />
+          ) : (
+            <TouchableOpacity
+              style={styles.generatePlaylistButton}
+              onPress={handleAIGeneratePlaylist}
+            >
+              <Text style={styles.buttonText}>Generate AI Playlist</Text>
+            </TouchableOpacity>
+          )}
+
+          {/* "or" Text */}
+          <Text style={styles.orText}>or</Text>
 
           {/* Create Playlist Button */}
           <TouchableOpacity
             style={styles.createPlaylistButton}
-            onPress={() => navigation.navigate('CreatePlaylist', { accessToken: userInfo.spotify_token })}
+            onPress={() =>
+              navigation.navigate("CreatePlaylist", {
+                accessToken: userInfo.spotify_token,
+              })
+            }
           >
             <Text style={styles.buttonText}>Create Playlist</Text>
           </TouchableOpacity>
 
           {/* Sign Out Button */}
-          <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
+          <TouchableOpacity
+            onPress={handleSignOut}
+            style={styles.signOutButton}
+          >
             <Text style={styles.buttonText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
@@ -111,28 +150,29 @@ function MainScreen({ navigation, route }) {
             <Text style={styles.appTitle}>syncopace</Text>
           </View>
           <Text style={styles.tagline}>
-            We match your pace.{'\n'}
+            We match your pace.{"\n"}
             You enjoy the music.
           </Text>
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={styles.signUpButton}
-              onPress={() => navigation.navigate('SignUp')}
+              onPress={() => navigation.navigate("SignUp")}
             >
               <Text style={styles.buttonText}>SIGN UP</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.loginButton}
-              onPress={() => navigation.navigate('Login')}
+              onPress={() => navigation.navigate("Login")}
             >
               <Text style={styles.buttonText}>LOG IN</Text>
             </TouchableOpacity>
           </View>
 
           <Text style={styles.termsText}>
-            By clicking on Sign Up, you agree to syncopace's Terms and Conditions of Use.
+            By clicking on Sign Up, you agree to syncopace's Terms and
+            Conditions of Use.
           </Text>
         </View>
       )}
@@ -149,7 +189,7 @@ export default function App() {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          cardStyle: { backgroundColor: '#121212' },
+          cardStyle: { backgroundColor: "#121212" },
         }}
       >
         <Stack.Screen
@@ -159,7 +199,7 @@ export default function App() {
             userInfo,
             setUserInfo: (newUserInfo) => {
               setUserInfo(newUserInfo);
-            }
+            },
           }}
         />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
@@ -174,100 +214,124 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#121212",
+    justifyContent: "flex-start", // Align items to the top
+    alignItems: "center",
     paddingHorizontal: 20,
+    paddingTop: 150,
   },
   content: {
-    alignItems: 'center',
-    width: '100%',
+    alignItems: "center",
+    width: "100%",
+  },
+  topContainer: {
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 150, // Adds spacing below the welcome text
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  lightText: {
+    color: "#FFFFFF",
   },
   titleContainer: {
     marginBottom: 20,
   },
   appTitle: {
     fontSize: 48,
-    fontWeight: 'bold',
-    color: '#2196F3',
+    fontWeight: "bold",
+    color: "#2196F3",
   },
   tagline: {
     fontSize: 24,
-    color: '#FFFFFF',
-    textAlign: 'center',
+    color: "#FFFFFF",
+    textAlign: "center",
     marginBottom: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     lineHeight: 32,
   },
   input: {
-    width: '100%',
+    width: "100%",
     padding: 12,
     borderRadius: 5,
-    backgroundColor: '#333',
-    color: '#fff',
+    backgroundColor: "#333",
+    color: "#fff",
     marginBottom: 15,
     fontSize: 16,
   },
   buttonContainer: {
-    width: '80%',
-    alignItems: 'center',
+    width: "80%",
+    alignItems: "center",
   },
   generatePlaylistButton: {
-    backgroundColor: '#1DB954',
+    backgroundColor: "#1DB954",
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
     marginVertical: 10,
-    alignSelf: 'center',
+    alignSelf: "center",
+    width: "80%", // Set the width to be the same for both buttons
   },
+
   createPlaylistButton: {
-    backgroundColor: '#1DB954',
+    backgroundColor: "#1DB954",
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
     marginVertical: 10,
-    alignSelf: 'center',
+    alignSelf: "center",
+    width: "80%", // Set the width to be the same for both buttons
+    marginTop: 20,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
   signOutButton: {
-    backgroundColor: '#ff4444',
+    backgroundColor: "#ff4444",
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
     marginVertical: 10,
+    width: "80%",
   },
   signUpButton: {
-    backgroundColor: '#2196F3',
-    width: '100%',
+    backgroundColor: "#2196F3",
+    width: "100%",
     paddingVertical: 16,
     borderRadius: 25,
     marginBottom: 16,
   },
   loginButton: {
-    backgroundColor: 'transparent',
-    width: '100%',
+    backgroundColor: "transparent",
+    width: "100%",
     paddingVertical: 16,
     borderRadius: 25,
     borderWidth: 1,
-    borderColor: '#FFFFFF',
+    borderColor: "#FFFFFF",
     marginBottom: 100,
   },
   termsText: {
-    color: '#B3B3B3',
+    color: "#B3B3B3",
     fontSize: 12,
-    textAlign: 'center',
+    textAlign: "center",
     paddingHorizontal: 40,
   },
   lightText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
   title: {
     fontSize: 24,
     marginBottom: 10,
+  },
+  orText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "bold",
+    margin: 40, // Adds some space above and below the text
   },
 });

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
@@ -21,6 +22,7 @@ const Stack = createStackNavigator();
 function MainScreen({ navigation, route }) {
   const { userInfo, setUserInfo } = route.params;
   const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignOut = () => {
     route.params.setUserInfo(null);
@@ -39,9 +41,11 @@ function MainScreen({ navigation, route }) {
       return;
     }
 
+    setLoading(true);
+
     try {
       const response = await fetch(
-        "http://169.231.219.152:5001/generate_ai_playlist",
+        "http://169.231.72.83:5001/generate_ai_playlist",
         {
           method: "POST",
           headers: {
@@ -79,6 +83,8 @@ function MainScreen({ navigation, route }) {
     } catch (error) {
       console.log(error);
       Alert.alert("Error", "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -104,12 +110,16 @@ function MainScreen({ navigation, route }) {
           />
 
           {/* Generate AI Playlist Button */}
-          <TouchableOpacity
-            style={styles.generatePlaylistButton}
-            onPress={handleAIGeneratePlaylist}
-          >
-            <Text style={styles.buttonText}>Generate AI Playlist</Text>
-          </TouchableOpacity>
+          {loading ? (
+            <ActivityIndicator size="large" color="#1DB954" />
+          ) : (
+            <TouchableOpacity
+              style={styles.generatePlaylistButton}
+              onPress={handleAIGeneratePlaylist}
+            >
+              <Text style={styles.buttonText}>Generate AI Playlist</Text>
+            </TouchableOpacity>
+          )}
 
           {/* "or" Text */}
           <Text style={styles.orText}>or</Text>

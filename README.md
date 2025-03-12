@@ -21,6 +21,10 @@
 - npm install
 - run "npx expo start --tunnel" or just "npx expo start"
 
+## IP Address Setup 
+- Go to the config.js file located in the syncopace folder
+- For the SERVER_IP field, enter the IP address that your device is on
+- For the SERVER_PORT field, the app should run on port 5001, but if not, enter an available port on your device
 
 ## Tech Stack
 - **Frontend**: React Native (mobile app)

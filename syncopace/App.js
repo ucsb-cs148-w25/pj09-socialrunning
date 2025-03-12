@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -14,6 +14,7 @@ const Stack = createStackNavigator();
 function MainScreen({ navigation, route }) {
   const { userInfo, setUserInfo } = route.params;
   const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSignOut = () => {
     route.params.setUserInfo(null);
@@ -29,6 +30,8 @@ function MainScreen({ navigation, route }) {
       return;
     }
 
+    setLoading(true);
+
     try {
 
       const response = await fetch('http://169.231.219.152:5001/generate_ai_playlist', {
@@ -43,8 +46,6 @@ function MainScreen({ navigation, route }) {
       });
 
       const data = await response.json();
-      // console.log("RESPONSE:\n");
-      // console.log(data);
 
       const filteredData = {
         message: data.message,
@@ -52,7 +53,6 @@ function MainScreen({ navigation, route }) {
         playlist_url: data.playlist_url
       };
 
-      // console.log(filteredData);
       if (response.ok) {
         navigation.navigate('PlaylistScreen', {
           playlist: filteredData, 
@@ -68,6 +68,8 @@ function MainScreen({ navigation, route }) {
     } catch (error) {
       console.log(error);
       Alert.alert('Error', 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,16 +83,20 @@ function MainScreen({ navigation, route }) {
           {/* Text Input for User Query */}
           <TextInput
             style={styles.input}
-            placeholder="Type your mood, we generate the playlist"
+            placeholder="Type in your mood, we generate the playlist"
             placeholderTextColor="#ccc"
             value={query}
             onChangeText={setQuery}
           />
 
           {/* Generate AI Playlist Button */}
-          <TouchableOpacity style={styles.generatePlaylistButton} onPress={handleAIGeneratePlaylist}>
-            <Text style={styles.buttonText}>Generate AI Playlist</Text>
-          </TouchableOpacity>
+          {loading ? (
+            <ActivityIndicator size="large" color="#1DB954" />
+          ) : (
+            <TouchableOpacity style={styles.generatePlaylistButton} onPress={handleAIGeneratePlaylist}>
+              <Text style={styles.buttonText}>Generate AI Playlist</Text>
+            </TouchableOpacity>
+          )}
 
           {/* Create Playlist Button */}
           <TouchableOpacity
@@ -215,31 +221,35 @@ const styles = StyleSheet.create({
   generatePlaylistButton: {
     backgroundColor: '#1DB954',
     paddingVertical: 12,
-    paddingHorizontal: 40,
     borderRadius: 25,
     marginVertical: 10,
-    alignSelf: 'center',
+    alignSelf: 'stretch',  
+    width: '100%',  
+    alignItems: 'center', 
   },
   createPlaylistButton: {
     backgroundColor: '#1DB954',
     paddingVertical: 12,
-    paddingHorizontal: 40,
     borderRadius: 25,
     marginVertical: 10,
-    alignSelf: 'center',
+    alignSelf: 'stretch', 
+    width: '100%',
+    alignItems: 'center',
+  },
+  signOutButton: {
+    backgroundColor: '#ff4444',
+    paddingVertical: 12,
+    borderRadius: 25,
+    marginVertical: 10,
+    alignSelf: 'stretch',
+    width: '100%',
+    alignItems: 'center',
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
-  },
-  signOutButton: {
-    backgroundColor: '#ff4444',
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 25,
-    marginVertical: 10,
   },
   signUpButton: {
     backgroundColor: '#2196F3',

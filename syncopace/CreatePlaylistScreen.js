@@ -90,8 +90,7 @@ export default function CreatePlaylistScreen() {
         `Your playlist has been added to your Spotify!`,
         [{ text: "OK" }]
       );
-      // console.log("CREATE RESPONSE:");
-      // console.log(playlistData);
+      
       // Navigate to the PlaylistScreen
       navigation.navigate("PlaylistScreen", {
         playlist: playlistData,

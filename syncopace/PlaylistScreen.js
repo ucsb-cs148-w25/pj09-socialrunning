@@ -47,9 +47,11 @@ export default function PlaylistScreen() {
         return '#1DB954'; 
     }
     const colors = {
-        '1': '#4CAF50',
-        '2': '#FFC107',
-        '3': '#F44336',
+      '1': '#4CAF50',  // Recovery/Easy run – green
+      '2': '#8BC34A',  // Light run – lighter green
+      '3': '#FFC107',  // Moderate run – amber
+      '4': '#FF9800',  // Hard run – orange
+      '5': '#F44336',  // Sprint/VO2 max – red
     };
     return colors[zone] || '#1DB954'; 
 };

@@ -8,7 +8,7 @@
 - Worked on non-Spotify login and sign up (Firebase integration)
 - Led first retro
 - Minor UX improvements
-- Updated cardio zones (#TODO)
+- Updated cardio zones (from 1-3 to 1-5)
 
 ## Nilays's contributions
 - Found Kaggle dataset to temporarily get over hitch of deprecated Spotify API features

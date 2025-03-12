@@ -12,10 +12,12 @@ import { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import SignUpScreen from "./SignUpScreen";
-import LoginScreen from "./LoginScreen";
-import CreatePlaylistScreen from "./CreatePlaylistScreen";
-import PlaylistScreen from "./PlaylistScreen";
+import SignUpScreen from './SignUpScreen';
+import LoginScreen from './LoginScreen';
+import CreatePlaylistScreen from './CreatePlaylistScreen';
+import PlaylistScreen from './PlaylistScreen';
+import config from './config';
+
 
 const Stack = createStackNavigator();
 
@@ -41,22 +43,20 @@ function MainScreen({ navigation, route }) {
       return;
     }
 
+    try {
+      const response = await fetch(`http://${config.SERVER_IP}:${config.SERVER_PORT}/generate_ai_playlist`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: query,
+          access_token: userInfo.spotify_token,
+        }),
+      });
     setLoading(true);
 
-    try {
-      const response = await fetch(
-        "http://169.231.72.83:5001/generate_ai_playlist",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            query: query,
-            access_token: userInfo.spotify_token,
-          }),
-        }
-      );
+
 
       const data = await response.json();
       // console.log("RESPONSE:\n");

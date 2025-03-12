@@ -14,6 +14,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation, useRoute } from "@react-navigation/native";
 // import { play } from 'react-native-track-player/lib/src/trackPlayer';
+import config from './config';
 
 export default function CreatePlaylistScreen() {
   const route = useRoute();
@@ -41,8 +42,8 @@ export default function CreatePlaylistScreen() {
     };
 
     try {
+      const backendUrl = `http://${config.SERVER_IP}:${config.SERVER_PORT}/get_songs`;
 
-      const backendUrl = "http://169.231.101.0:5001/get_songs";
 
 
       // Fetch songs based on the selected cardio zone and duration
@@ -73,8 +74,8 @@ export default function CreatePlaylistScreen() {
       }
 
       // Now create the playlist in the user's Spotify account
+      const createPlaylistUrl = `http://${config.SERVER_IP}:${config.SERVER_PORT}/create_playlist`;
 
-      const createPlaylistUrl = "http://169.231.101.0:5001/create_playlist";
 
 
       const createPlaylistResponse = await fetch(createPlaylistUrl, {

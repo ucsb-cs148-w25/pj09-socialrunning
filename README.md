@@ -6,7 +6,7 @@
 ## Backend Setup (Python)
 
 1. **Create a Virtual Environment, install dependencies, and start running backend**  
-   Run the following command to create a virtual environment named `venv`:
+   Run the following command to create a virtual environment named `venv` inside the **backend** folder within syncopace:
    ```bash
    - python3 -m venv venv
    - source venv/bin/activate
@@ -14,10 +14,11 @@
    - python3 app.py
 
    Download from this kaggle dataset to your local computer: https://www.kaggle.com/datasets/priyamchoksi/spotify-dataset-114k-songs 
-   In the backend folder add take this downloaded file and and change the name to "track_features.csv"
+   In the backend folder add take this downloaded file and and change the name to "tracks_features.csv"
 
 ## Frontend Setup (Javacript) 
 - instantiate a new terminal
+- cd into syncopace
 - npm install
 - run "npx expo start --tunnel" or just "npx expo start"
 

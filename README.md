@@ -16,16 +16,19 @@
    Download from this kaggle dataset to your local computer: https://www.kaggle.com/datasets/priyamchoksi/spotify-dataset-114k-songs 
    In the backend folder add take this downloaded file and and change the name to "tracks_features.csv"
 
-## Frontend Setup (Javacript) 
+2. ## Frontend Setup (Javacript) 
 - instantiate a new terminal
 - cd into syncopace
 - npm install
 - run "npx expo start --tunnel" or just "npx expo start"
 
-## IP Address Setup 
+3. ## IP Address Setup 
 - Go to the config.js file located in the syncopace folder
 - For the SERVER_IP field, enter the IP address that your device is on
 - For the SERVER_PORT field, the app should run on port 5001, but if not, enter an available port on your device
+
+4. ## .env file
+- Ask for the .env file and place inside the syncopace folder
 
 ## Tech Stack
 - **Frontend**: React Native (mobile app)

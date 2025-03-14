@@ -1,14 +1,16 @@
-## Ron's contributions
-- Worked on login and signup functionality (Spotify integration)
-- refined UI/UX
-- led second retro
-
 ## Liv's contributions
 - Came up with app idea and helped boost team morale during initial hiccups with Spotify API
 - Worked on non-Spotify login and sign up (Firebase integration)
 - Led first retro
 - Minor UX improvements
 - Updated cardio zones (from 1-3 to 1-5)
+
+## Ron's contributions
+- Implemented app login and signup (with Spotify integration)
+- UI / UX improvements for app welcome and home pages
+- Led second retro
+- Created system design diagram and added app functionality to design doc
+- User manual
 
 ## Nilays's contributions
 - Found Kaggle dataset to temporarily get over hitch of deprecated Spotify API features
@@ -25,7 +27,7 @@
 - Added navigator to the App.js so we could add API call routing
 - Made minor adjustments to the create playlist page 
 - Created a playback page for the user which displays newly built playlist for different zones in thier run
-- Worked with Adil to implement OpenAI API calls to reccomend songs based on text based descriptions
+- Worked with Adil to implement OpenAI API calls to recommend songs based on text based descriptions
 
 ## Piyush' contributions
 - Worked on Playlist Creation page to get user's playlist preferences

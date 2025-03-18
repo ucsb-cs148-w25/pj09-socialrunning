@@ -16,8 +16,8 @@
 - Found Kaggle dataset to temporarily get over hitch of deprecated Spotify API features
 - Built Playlist Creation page and relevant form to get user's playlist preferences
 - Assisted development of API route to generate the playlist in the user's Spotify
-- Minor UX improvements to Playlist page
-- Added button to open generated playlist directly in Spotify (in PR phase)
+- UX improvements to Playlist and Home page
+- Added button to open generated playlist directly in Spotify 
 - Led many daily scrums
 
 
